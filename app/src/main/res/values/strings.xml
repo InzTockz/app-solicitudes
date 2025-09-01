@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">app-solicitudes</string>
+    <string name="login_screen_text_title">SAP Pedidos Preliminares</string>
+    <string name="login_screen_text_secondary">Ingresa tus credenciales para acceder al sistema</string>
+    <string name="login_screen_textfield_text_usuario">Usuario</string>
+    <string name="login_screen_textfield_text_contraseña">Contraseña</string>
+    <string name="login_screen_button_text_login">Iniciar Sesión</string>
+</resources>
