@@ -12,7 +12,7 @@ object NavigationBar
 object Home
 
 @Serializable
-object Register
+object Pedido
 
 @Serializable
 object Perfil

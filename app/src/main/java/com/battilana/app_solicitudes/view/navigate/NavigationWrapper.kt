@@ -9,21 +9,18 @@ import com.battilana.app_solicitudes.view.screens.login.LoginScreen
 import com.battilana.app_solicitudes.view.screens.navbar.NavigationBarScreen
 
 @Composable
-fun NavigationWrapper(){
+fun NavigationWrapper() {
 
     val navOptions = rememberNavController()
 
-    NavHost(navController = navOptions, startDestination = Home){
+    NavHost(navController = navOptions, startDestination = NavigationBar) {
         composable<Login> {
             LoginScreen(
-                navigation = { navOptions.navigate(NavigationBar)}
+                navigation = { navOptions.navigate(NavigationBar) }
             )
         }
         composable<NavigationBar> {
             NavigationBarScreen()
-        }
-        composable<Home>{
-            HomeScreen()
         }
     }
 }
