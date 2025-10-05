@@ -13,7 +13,7 @@ fun NavigationWrapper() {
 
     val navOptions = rememberNavController()
 
-    NavHost(navController = navOptions, startDestination = Login) {
+    NavHost(navController = navOptions, startDestination = NavigationBar) {
         composable<Login> {
             LoginScreen(
                 navigation = { navOptions.navigate(NavigationBar) }
