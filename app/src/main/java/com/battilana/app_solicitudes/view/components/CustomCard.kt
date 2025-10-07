@@ -1,7 +1,6 @@
 package com.battilana.app_solicitudes.view.components
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CardDefaults
@@ -14,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun BattiElevatedCard(
+fun BattiElevatedCardNotification(
     modifier: Modifier = Modifier,
     elevation: CardElevation = CardDefaults.elevatedCardElevation(5.dp),
     textFirst: String,

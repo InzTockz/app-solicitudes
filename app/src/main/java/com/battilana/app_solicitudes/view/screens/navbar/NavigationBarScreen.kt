@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -37,8 +38,12 @@ import com.battilana.app_solicitudes.R
 import com.battilana.app_solicitudes.view.navigate.Home
 import com.battilana.app_solicitudes.view.navigate.NavigationWrapper
 import com.battilana.app_solicitudes.view.navigate.Pedido
+import com.battilana.app_solicitudes.view.navigate.Profile
+import com.battilana.app_solicitudes.view.navigate.ReportHistory
+import com.battilana.app_solicitudes.view.screens.HistorialPedidosScreen.HistorialPedidosScreen
 import com.battilana.app_solicitudes.view.screens.home.HomeScreen
 import com.battilana.app_solicitudes.view.screens.pedido.PedidoScreen
+import com.battilana.app_solicitudes.view.screens.profile.ProfileScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,9 +51,13 @@ fun NavigationBarScreen(
 ) {
     val itemsNav = listOf(
         NavItem(name = "Inicio", icon = Icons.Default.Home, route = Home),
-        NavItem(name = "Nuevo", icon = Icons.Default.Add, route = Pedido),
-        NavItem(name = "Solicitudes", icon = ImageVector.vectorResource(R.drawable.ic_form), route = {}),
-        NavItem(name = "Perfil", icon = Icons.Default.Person, route = {})
+        NavItem(name = "Nuevo", icon = ImageVector.vectorResource(R.drawable.ic_pckg_add), route = Pedido),
+        NavItem(
+            name = "Solicitudes",
+            icon = ImageVector.vectorResource(R.drawable.ic_form),
+            route = ReportHistory
+        ),
+        NavItem(name = "Perfil", icon = Icons.Default.Person, route = Profile)
     )
 
     val navController = rememberNavController()
@@ -76,6 +85,8 @@ fun NavigationBarScreen(
         {
             composable<Home> { HomeScreen() }
             composable<Pedido> { PedidoScreen() }
+            composable<Profile> { ProfileScreen() }
+            composable<ReportHistory> { HistorialPedidosScreen() }
         }
     }
 }
@@ -83,6 +94,7 @@ fun NavigationBarScreen(
 @Composable
 fun RowScope.NavItems(navItem: NavItem, isSelected: Boolean, onIndexChange: () -> Unit) {
     NavigationBarItem(
+        modifier = Modifier.size(30.dp),
         selected = isSelected,
         onClick = {
             onIndexChange()

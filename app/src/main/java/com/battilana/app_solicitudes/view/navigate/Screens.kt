@@ -15,7 +15,7 @@ object Home
 object Pedido
 
 @Serializable
-object Perfil
+object Profile
 
 @Serializable
-object Report
+object ReportHistory
