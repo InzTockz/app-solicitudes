@@ -24,6 +24,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -69,6 +70,7 @@ fun NavigationBarScreen(
                 itemsNav.forEachIndexed { index, item ->
                     NavItems(navItem = item, isSelected = isSelected == index) {
                         isSelected = index
+
                         item.route.let { navController.navigate(it) }
                     }
                 }
@@ -77,7 +79,7 @@ fun NavigationBarScreen(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Home,
+            startDestination = Pedido,
             modifier = Modifier
                 .padding(innerPadding)
                 .consumeWindowInsets(innerPadding),
@@ -96,9 +98,7 @@ fun RowScope.NavItems(navItem: NavItem, isSelected: Boolean, onIndexChange: () -
     NavigationBarItem(
         modifier = Modifier.size(30.dp),
         selected = isSelected,
-        onClick = {
-            onIndexChange()
-        },
+        onClick = onIndexChange,
         label = { Text(navItem.name) },
         alwaysShowLabel = false,
         icon = {

@@ -2,52 +2,57 @@
 
 package com.battilana.app_solicitudes.view.screens.pedido
 
-import android.view.RoundedCorner
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import com.battilana.app_solicitudes.view.components.BattiTextField
+import com.battilana.app_solicitudes.view.components.BattiButton
+import com.battilana.app_solicitudes.view.components.BattiOutLinedButton
 
 @Composable
 fun PedidoScreen() {
 
-    val data = (1..30).toList()
+    val data = (1..60).toList()
+    val productos by remember { mutableStateOf("") }
+    val titulos = remember { mutableListOf<String>(
+        "Producto", "Cantidad", "Almacen"
+    ) }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = "Nuevo pedido Preliminar") },
-//                navigationIcon = {
-//                    IconButton(onClick = {}) {
-//                        Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null)
-//                    }
-//                }
             )
         }
     ) { innerPadding ->
@@ -55,112 +60,107 @@ fun PedidoScreen() {
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(horizontal = 20.dp)
-                //.verticalScroll(rememberScrollState())
+                .verticalScroll(rememberScrollState())
         ) {
-            OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth(),
+            BattiTextField(
                 value = "",
                 onValueChange = {},
-                label = { Text(text = "Asignado a") },
+                label = "Asignado a",
                 shape = RoundedCornerShape(12.dp)
             )
-            OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth(),
+            BattiTextField(
                 value = "",
                 onValueChange = {},
-                label = { Text(text = "Cliente") },
+                label = "Cliente",
                 shape = RoundedCornerShape(12.dp)
             )
-            OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth(),
+            BattiTextField(
                 value = "",
                 onValueChange = {},
-                label = { Text(text = "Vendedor") },
+                label = "Vendedor",
                 shape = RoundedCornerShape(12.dp)
             )
-            OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth(),
+            BattiTextField(
                 value = "",
                 onValueChange = {},
-                label = { Text(text = "Producto") },
+                label = "Producto",
                 shape = RoundedCornerShape(12.dp)
             )
             Row {
-                OutlinedTextField(
+                BattiTextField(
                     modifier = Modifier
                         .weight(1f),
                     value = "",
                     onValueChange = {},
-                    label = { Text(text = "Cantidad") },
+                    label = "Cantidad",
                     shape = RoundedCornerShape(12.dp)
                 )
                 Spacer(Modifier.width(10.dp))
-                OutlinedTextField(
+                BattiTextField(
                     modifier = Modifier
                         .weight(1f),
                     value = "",
                     onValueChange = {},
-                    label = { Text(text = "Stock") },
+                    label = "Stock",
                     shape = RoundedCornerShape(12.dp)
                 )
                 Spacer(Modifier.width(10.dp))
-                OutlinedTextField(
+                BattiTextField(
                     modifier = Modifier
                         .weight(1f),
                     value = "",
                     onValueChange = {},
-                    label = { Text(text = "Almacen") },
+                    label = "Almacen",
                     shape = RoundedCornerShape(12.dp)
                 )
             }
-            Button(
+            BattiButton(
+                onClick = {},
+                text = "Agregar Producto"
+            )
+
+            Card(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = {}
+                shape = RoundedCornerShape(12.dp)
             ) {
-                Text(text = "Agregar Producto")
-            }
-
-            /*
-            SECCION DEL GRILL PARA LA TABLA
-            */
-
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
-                contentPadding = PaddingValues(8.dp),
-
-            ) {
-                items(data.size){ item ->
-                    Card {
-                        Text(text = "Pruebita :" + data[item])
+                Column(
+                    modifier = Modifier.padding(10.dp)
+                )
+                {
+                    Row(
+                        Modifier.fillMaxWidth(),
+//                        horizontalArrangement = Alignment.CenterHorizontally
+                    ) {
+                        titulos.forEach { response ->
+                            Text(text = response, Modifier.weight(1f))
+                        }
+                    }
+                    HorizontalDivider(thickness = 2.dp)
+                    Row {
+                        Text("Arroz", Modifier.weight(1f))
+                        Text("15", Modifier.weight(1f))
+                        Text("15", Modifier.weight(1f))
                     }
                 }
             }
 
             Spacer(Modifier.height(50.dp))
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {}
-            ) {
-                Text(text = "Registrar Pedido")
-            }
+            BattiButton(
+                onClick = {},
+                text = "Registrar Pedido"
+            )
             Row {
-                OutlinedButton(
+                BattiOutLinedButton(
                     modifier = Modifier.weight(1f),
-                    onClick = {}
-                ) {
-                    Text(text = "Limpiar tabla")
-                }
+                    onClick = {},
+                    text = "Limpiar tabla"
+                )
                 Spacer(Modifier.width(10.dp))
-                OutlinedButton(
+                BattiOutLinedButton(
                     modifier = Modifier.weight(1f),
-                    onClick = {}
-                ) {
-                    Text(text = "Cancelar pedido")
-                }
+                    onClick = {},
+                    text = "Cancelar pedido"
+                )
             }
 
         }
