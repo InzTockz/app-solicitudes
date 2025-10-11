@@ -29,7 +29,8 @@ fun BattiOutLinedButton(
     modifier: Modifier = Modifier,
     onClick:() -> Unit,
     shape: Shape = RoundedCornerShape(25),
-    text: String
+    text: String,
+
 ){
     Button(
         modifier = modifier.fillMaxWidth(),

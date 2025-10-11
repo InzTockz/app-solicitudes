@@ -19,13 +19,17 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -35,6 +39,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.battilana.app_solicitudes.view.components.BattiTextField
 import com.battilana.app_solicitudes.view.components.BattiButton
@@ -46,9 +51,8 @@ fun PedidoScreen() {
     val data = (1..60).toList()
     val productos by remember { mutableStateOf("") }
     val titulos = remember { mutableListOf<String>(
-        "Producto", "Cantidad", "Almacen"
+        "Producto", "Cantidad", "Almacen", "Accion"
     ) }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -136,10 +140,27 @@ fun PedidoScreen() {
                         }
                     }
                     HorizontalDivider(thickness = 2.dp)
-                    Row {
+                    Row (
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Text("Arroz", Modifier.weight(1f))
                         Text("15", Modifier.weight(1f))
                         Text("15", Modifier.weight(1f))
+                        TextButton(modifier = Modifier
+                            .weight(1f),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                            onClick = {}) { Text(text = "Quitar")}
+                    }
+                    Row (
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Avivat caninos x bolsa", Modifier.weight(1f))
+                        Text("20", Modifier.weight(1f))
+                        Text("15", Modifier.weight(1f))
+                        TextButton(modifier = Modifier
+                            .weight(1f),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                            onClick = {}) { Text(text = "Quitar")}
                     }
                 }
             }
