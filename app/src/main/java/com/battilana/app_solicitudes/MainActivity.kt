@@ -5,8 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.battilana.app_solicitudes.ui.theme.AppsolicitudesTheme
-import com.battilana.app_solicitudes.view.navigate.NavigationWrapper
+import com.battilana.app_solicitudes.navigate.NavigationWrapper
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
