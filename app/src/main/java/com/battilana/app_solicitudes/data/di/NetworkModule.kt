@@ -3,8 +3,11 @@ package com.battilana.app_solicitudes.data.di
 import android.content.Context
 import com.battilana.app_solicitudes.data.local.UserPreferences
 import com.battilana.app_solicitudes.data.remote.ApiService
+import com.battilana.app_solicitudes.data.remote.AuthInterceptor
 import com.battilana.app_solicitudes.data.repository.AuthRepositoryImpl
+import com.battilana.app_solicitudes.data.repository.UsuarioRepositoryImpl
 import com.battilana.app_solicitudes.domain.repository.AuthRepository
+import com.battilana.app_solicitudes.domain.repository.UserRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,6 +15,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
@@ -19,10 +23,16 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    //Repository: la capa que usa el API
+    //Auth Repository
     @Provides
     fun provideAuthRepository(api: ApiService): AuthRepository{
         return AuthRepositoryImpl(api)
+    }
+
+    //User Repository
+    @Provides
+    fun provideUserRepository(api: ApiService): UserRepository{
+        return UsuarioRepositoryImpl(api)
     }
 
     //ApiService: interfaz con los endpoints
@@ -31,11 +41,12 @@ object NetworkModule {
         return retrofit.create(ApiService::class.java)
     }
 
-    //Retrofit configuraod con el convertidor JSON moderno
+    //Configuracion base Retrofit
     @Provides
-    fun provideRetrofit(json: Json): Retrofit {
+    fun provideRetrofit(client: OkHttpClient, json: Json): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("http://192.168.1.139:8080/api/v1/")
+            .baseUrl("http://10.0.2.2:8080/api/v1/")
+            .client(client)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
     }
@@ -51,5 +62,17 @@ object NetworkModule {
     @Provides
     fun provideUserPreferences(@ApplicationContext context: Context, json: Json): UserPreferences{
         return UserPreferences(context, json)
+    }
+
+    @Provides
+    fun provideAuthInterceptor(userPreferences: UserPreferences): AuthInterceptor{
+        return AuthInterceptor(userPreferences)
+    }
+
+    @Provides
+    fun provideOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient{
+        return OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .build()
     }
 }

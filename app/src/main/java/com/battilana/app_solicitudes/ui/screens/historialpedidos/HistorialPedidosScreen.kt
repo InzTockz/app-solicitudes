@@ -1,4 +1,4 @@
-package com.battilana.app_solicitudes.ui.screens.HistorialPedidosScreen
+package com.battilana.app_solicitudes.ui.screens.historialpedidos
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

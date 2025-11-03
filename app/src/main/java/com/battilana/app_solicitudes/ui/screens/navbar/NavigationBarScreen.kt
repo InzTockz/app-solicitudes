@@ -30,7 +30,7 @@ import com.battilana.app_solicitudes.navigate.Home
 import com.battilana.app_solicitudes.navigate.Pedido
 import com.battilana.app_solicitudes.navigate.Profile
 import com.battilana.app_solicitudes.navigate.ReportHistory
-import com.battilana.app_solicitudes.ui.screens.HistorialPedidosScreen.HistorialPedidosScreen
+import com.battilana.app_solicitudes.ui.screens.historialpedidos.HistorialPedidosScreen
 import com.battilana.app_solicitudes.ui.screens.home.HomeScreen
 import com.battilana.app_solicitudes.ui.screens.pedido.PedidoScreen
 import com.battilana.app_solicitudes.ui.screens.profile.ProfileScreen
@@ -40,7 +40,7 @@ import com.battilana.app_solicitudes.ui.screens.profile.ProfileScreen
 fun NavigationBarScreen(
     onLogout: () -> Unit
 ) {
-    val innerNavcontroller = rememberNavController()
+
     val itemsNav = listOf(
         NavItem(name = "Inicio", icon = Icons.Default.Home, route = Home),
         NavItem(

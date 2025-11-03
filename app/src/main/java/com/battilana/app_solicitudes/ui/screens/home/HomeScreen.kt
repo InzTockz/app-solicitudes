@@ -25,9 +25,6 @@ import com.battilana.app_solicitudes.ui.components.BattiTopAppBarHome
 
 @Composable
 fun HomeScreen() {
-
-
-
     Scaffold(
         topBar = {
             BattiTopAppBarHome(text = "Dashboard")

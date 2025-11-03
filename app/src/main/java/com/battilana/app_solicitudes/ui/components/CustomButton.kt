@@ -34,14 +34,16 @@ fun BattiButtonSimple(
     text: String,
     shape: Shape = RoundedCornerShape(25),
     colors: ButtonColors = ButtonDefaults.buttonColors(),
-    contentPadding: PaddingValues = ButtonDefaults.ContentPadding
+    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
+    enabled: Boolean = true
 ){
     Button(
         modifier = modifier,
         onClick = onClick,
         shape = shape,
         colors = colors,
-        contentPadding = contentPadding
+        contentPadding = contentPadding,
+        enabled = enabled
     ) {
         Text(text = text)
     }

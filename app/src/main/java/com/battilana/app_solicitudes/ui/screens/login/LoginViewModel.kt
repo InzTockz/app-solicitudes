@@ -7,6 +7,7 @@ import com.battilana.app_solicitudes.data.local.UserPreferences
 import com.battilana.app_solicitudes.data.model.UserSession
 import com.battilana.app_solicitudes.domain.usecase.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -54,20 +55,28 @@ class LoginViewModel @Inject constructor(
         _uiStateLogin.update { it.copy(enabledButtonLogin = enabledLogin) }
     }
 
-    fun login(onSuccess: (String) -> Unit){
+    fun login(onSuccess: () -> Unit){
         viewModelScope.launch {
             try {
+                //CAMBIAR EL LOADING A TRUE Y GESTIONAR UN TIEMPO DE 1 SEGUNDO PARA EJECUTAR EL SIG. CODIGO
+                _uiStateLogin.value = _uiStateLogin.value.copy(isLoading = true)
+                delay(1000)
+
                 val response = loginUseCase(_uiStateLogin.value.username, _uiStateLogin.value.password)
-                userPreferences.saveUserSession(UserSession(
+                val session = UserSession(
                     response.idUsuario,
                     response.names,
                     response.subnames,
                     response.token,
-                    response.status))
-                onSuccess(response.token)
-                Log.i("TOKEN_SYSTEM_SUCCESS", "${userPreferences.userSession.map { it?.status }}")
+                    response.status
+                )
+                userPreferences.saveUserSession(session)
+
+                onSuccess()
             } catch (e: Exception){
-                Log.i("ERROR_LOGIN_MESSAGE", "No se pudo conectar")
+                _uiStateLogin.value = _uiStateLogin.value.copy(error = e.message, isLoading = false)
+            } finally {
+                _uiStateLogin.value = _uiStateLogin.value.copy(isLoading = false)
             }
         }
     }
@@ -77,5 +86,7 @@ data class LoginUiState(
     val username: String = "fredy",
     val password: String = "mugiwara",
     val viewPassword: Boolean = false,
-    val enabledButtonLogin: Boolean = false
+    val isLoading: Boolean = false,
+    val enabledButtonLogin: Boolean = false,
+    val error: String? = null
 )
