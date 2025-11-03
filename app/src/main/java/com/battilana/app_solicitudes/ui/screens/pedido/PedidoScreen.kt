@@ -2,6 +2,7 @@
 
 package com.battilana.app_solicitudes.ui.screens.pedido
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,25 +22,48 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.battilana.app_solicitudes.ui.components.BattiTextField
 import com.battilana.app_solicitudes.ui.components.BattiButton
 import com.battilana.app_solicitudes.ui.components.BattiOutLinedButton
+import com.battilana.app_solicitudes.ui.components.BattiSelect
 
 @Composable
-fun PedidoScreen() {
+fun PedidoScreen(
+    pedidoViewModel: PedidoViewModel = hiltViewModel()
+) {
 
-    val data = (1..60).toList()
+    val usuarios by pedidoViewModel.uiStateUsuarioResponse.collectAsState()
+    var selectedUsuarioSap by remember { mutableStateOf<UiStateOptionItem?>(null) }
+
     val productos by remember { mutableStateOf("") }
     val titulos = remember { mutableListOf<String>(
         "Producto", "Cantidad", "Almacen", "Accion"
-    ) }
+    )}
+
+    val elementos = listOf(
+        UiStateOptionItem(1, "Primer item"),
+        UiStateOptionItem(2, "Segundo item"),
+        UiStateOptionItem(3, "Tercero item"),
+        UiStateOptionItem(4, "Cuarto item"),
+        UiStateOptionItem(5, "Quinto item")
+    )
+    var selectedOption by remember { mutableStateOf<UiStateOptionItem?>(null) }
+
+    LaunchedEffect(Unit) {
+        pedidoViewModel.cargarUsuariosSap()
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -53,11 +77,19 @@ fun PedidoScreen() {
                 .padding(horizontal = 20.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            BattiTextField(
-                value = "",
-                onValueChange = {},
+            BattiSelect(
                 label = "Asignado a",
-                shape = RoundedCornerShape(12.dp)
+                options = usuarios.map {
+                    UiStateOptionItem(
+                        id = it.nombreUsuario.toIntOrNull() ?: 0,
+                        label = it.nombreUsuario
+                    )
+                },
+                selectedOptions = selectedUsuarioSap,
+                onSelected= {
+                    selectedUsuarioSap = it
+                    Log.i("VALUE_IN_SELECT", "${it.label}")
+                }
             )
             BattiTextField(
                 value = "",
@@ -65,17 +97,12 @@ fun PedidoScreen() {
                 label = "Cliente",
                 shape = RoundedCornerShape(12.dp)
             )
-            BattiTextField(
-                value = "",
-                onValueChange = {},
-                label = "Vendedor",
-                shape = RoundedCornerShape(12.dp)
-            )
-            BattiTextField(
-                value = "",
-                onValueChange = {},
-                label = "Producto",
-                shape = RoundedCornerShape(12.dp)
+            Spacer(Modifier.height(8.dp))
+            BattiSelect(
+                label = "Seleccione un producto",
+                options = elementos,
+                selectedOptions = selectedOption,
+                onSelected = { selectedOption = it}
             )
             Row {
                 BattiTextField(
@@ -162,12 +189,6 @@ fun PedidoScreen() {
                     modifier = Modifier.weight(1f),
                     onClick = {},
                     text = "Limpiar tabla"
-                )
-                Spacer(Modifier.width(10.dp))
-                BattiOutLinedButton(
-                    modifier = Modifier.weight(1f),
-                    onClick = {},
-                    text = "Cancelar pedido"
                 )
             }
 

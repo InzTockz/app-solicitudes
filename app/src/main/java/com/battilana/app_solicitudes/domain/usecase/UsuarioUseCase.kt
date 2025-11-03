@@ -3,10 +3,11 @@ package com.battilana.app_solicitudes.domain.usecase
 import com.battilana.app_solicitudes.data.model.UsuarioRequest
 import com.battilana.app_solicitudes.data.model.UsuarioResponse
 import com.battilana.app_solicitudes.data.repository.UsuarioRepositoryImpl
+import com.battilana.app_solicitudes.domain.repository.UserRepository
 import javax.inject.Inject
 
 class UsuarioUseCase @Inject constructor(
-    private val repository: UsuarioRepositoryImpl
+    private val repository: UserRepository
 ) {
 
     suspend fun getUsuarioById(idUsuario: Long): UsuarioResponse{

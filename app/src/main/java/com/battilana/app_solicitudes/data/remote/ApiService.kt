@@ -1,9 +1,11 @@
 package com.battilana.app_solicitudes.data.remote
 
+import com.battilana.app_solicitudes.data.model.ClientesSapResponse
 import com.battilana.app_solicitudes.data.model.LoginRequest
 import com.battilana.app_solicitudes.data.model.LoginResponse
 import com.battilana.app_solicitudes.data.model.UsuarioRequest
 import com.battilana.app_solicitudes.data.model.UsuarioResponse
+import com.battilana.app_solicitudes.data.model.UsuarioSapResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -36,4 +38,12 @@ interface ApiService {
 
     @DELETE("")
     suspend fun deleteUsuario(@Path("idUsuario") idUsuario: Long): Void
+
+    // ---------- USUARIO SAP ----------
+    @GET(value = "usuario-sap/listar")
+    suspend fun listarUsuarioSap(): List<UsuarioSapResponse>
+
+    // ---------- CONSULTAS SAP ----------
+    @GET(value = "listado/clientes/{idVendedor}")
+    suspend fun listarClientesPorVendedor(@Path("idVendedor") idVendedor: Int): List<ClientesSapResponse>
 }
