@@ -44,6 +44,6 @@ interface ApiService {
     suspend fun listarUsuarioSap(): List<UsuarioSapResponse>
 
     // ---------- CONSULTAS SAP ----------
-    @GET(value = "listado/clientes/{idVendedor}")
+    @GET(value = "sap/listado/clientes/{idVendedor}")
     suspend fun listarClientesPorVendedor(@Path("idVendedor") idVendedor: Int): List<ClientesSapResponse>
 }

@@ -25,22 +25,34 @@ class PedidoViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _uiStateUsuarioSapResponse = MutableStateFlow<List<UsuarioSapResponse>>(emptyList())
-    val uiStateUsuarioResponse : StateFlow<List<UsuarioSapResponse>> = _uiStateUsuarioSapResponse
+    val uiStateUsuarioResponse: StateFlow<List<UsuarioSapResponse>> = _uiStateUsuarioSapResponse
 
-    private val _uiStateClienteSapResponse = MutableStateFlow<ClientesSapResponse?>(null)
-    val uiStateClienteSapResponse: StateFlow<ClientesSapResponse?> = _uiStateClienteSapResponse
+    private val _uiStateClienteSapResponse = MutableStateFlow<List<ClientesSapResponse>>(emptyList())
+    val uiStateClienteSapResponse: StateFlow<List<ClientesSapResponse>> = _uiStateClienteSapResponse
 
-    fun cargarUsuariosSap(){
+    fun cargarUsuariosSap() {
         viewModelScope.launch {
             try {
                 val usuarios = usuarioSapUseCase.listarUsuarioSap()
                 _uiStateUsuarioSapResponse.value = usuarios
 
-                val session = userPreferences.userSession.first()
-                val idUsuario = session?.idUsuario ?: return@launch
-                val clientes = sapUseCase.listarClientesPorVendedor(idUsuario.toInt())
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 Log.i("USUARIO_ERROR", "Error al cargar usuarios: ${e.message}")
+            }
+        }
+    }
+
+    fun cargarClientesSap() {
+        viewModelScope.launch {
+            try {
+                val session = userPreferences.userSession.first()
+                val idUsuario = session?.idUsuario?.toInt() ?: return@launch
+
+                val clientes = sapUseCase.listarClientesPorVendedor(2)
+
+                _uiStateClienteSapResponse.value = clientes
+            } catch (e: Exception) {
+                Log.i("ERROR CLIENTE", "${e.message}")
             }
         }
     }
@@ -49,4 +61,9 @@ class PedidoViewModel @Inject constructor(
 data class UiStateOptionItem(
     val id: Int,
     val label: String
+)
+
+data class UiStateClienteItem(
+    val cardCode: String,
+    val cardName: String
 )

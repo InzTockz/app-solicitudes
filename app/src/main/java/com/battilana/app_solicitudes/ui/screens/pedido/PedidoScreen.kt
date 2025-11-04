@@ -46,6 +46,9 @@ fun PedidoScreen(
     val usuarios by pedidoViewModel.uiStateUsuarioResponse.collectAsState()
     var selectedUsuarioSap by remember { mutableStateOf<UiStateOptionItem?>(null) }
 
+    val clientes by pedidoViewModel.uiStateClienteSapResponse.collectAsState()
+    var selectedClienteSap by remember { mutableStateOf<UiStateClienteItem?>(null) }
+
     val productos by remember { mutableStateOf("") }
     val titulos = remember { mutableListOf<String>(
         "Producto", "Cantidad", "Almacen", "Accion"
@@ -62,6 +65,7 @@ fun PedidoScreen(
 
     LaunchedEffect(Unit) {
         pedidoViewModel.cargarUsuariosSap()
+        pedidoViewModel.cargarClientesSap()
     }
 
     Scaffold(
@@ -80,30 +84,34 @@ fun PedidoScreen(
             BattiSelect(
                 label = "Asignado a",
                 options = usuarios.map {
-                    UiStateOptionItem(
-                        id = it.nombreUsuario.toIntOrNull() ?: 0,
-                        label = it.nombreUsuario
-                    )
+                    UiStateOptionItem(it.idUsuarioSap.toInt(), it.nombreUsuario)
                 },
-                selectedOptions = selectedUsuarioSap,
+                selectedOption = selectedUsuarioSap,
+                labelMapper = { it.label},
                 onSelected= {
                     selectedUsuarioSap = it
-                    Log.i("VALUE_IN_SELECT", "${it.label}")
                 }
             )
-            BattiTextField(
-                value = "",
-                onValueChange = {},
-                label = "Cliente",
-                shape = RoundedCornerShape(12.dp)
+            BattiSelect(
+                label = "Seleccione un cliente",
+                options = clientes.map {
+                    UiStateClienteItem(it.cardCode, it.cardName)
+                },
+                selectedOption = selectedClienteSap,
+                labelMapper = {it.cardName},
+                onSelected = {
+                    selectedClienteSap = it
+                }
             )
             Spacer(Modifier.height(8.dp))
-            BattiSelect(
-                label = "Seleccione un producto",
-                options = elementos,
-                selectedOptions = selectedOption,
-                onSelected = { selectedOption = it}
-            )
+//            BattiSelect(
+//                label = "Seleccione un producto",
+//                options = elementos.map {
+//
+//                },
+//                selectedOptions = selectedOption,
+//                onSelected = { selectedOption = it}
+//            )
             Row {
                 BattiTextField(
                     modifier = Modifier

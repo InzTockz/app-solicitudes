@@ -1,6 +1,8 @@
 package com.battilana.app_solicitudes.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -17,28 +19,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.battilana.app_solicitudes.ui.screens.pedido.UiStateOptionItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BattiSelect(
-    label:String,
-    options: List<UiStateOptionItem>,
-    selectedOptions: UiStateOptionItem?,
-    onSelected: (UiStateOptionItem) -> Unit
-){
+fun <T> BattiSelect(
+    label: String,
+    options: List<T>,
+    selectedOption: T?,
+    labelMapper: (T) -> String,
+    onSelected: (T) -> Unit
+) {
     var expanded by remember { mutableStateOf(false) }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { expanded = !expanded}
+        onExpandedChange = { expanded = !expanded }
     ) {
         TextField(
-            value = selectedOptions?.label ?:"",
+            value = selectedOption?.let(labelMapper) ?: "",
             onValueChange = {},
             readOnly = true,
             label = { Text(text = label) },
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded)},
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
             modifier = Modifier
                 .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true)
                 .fillMaxWidth(),
@@ -46,11 +48,12 @@ fun BattiSelect(
         )
         ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false}
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.heightIn(max = 300.dp)
         ) {
             options.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(text = option.label)},
+                    text = { Text(text = labelMapper(option)) },
                     onClick = {
                         onSelected(option)
                         expanded = false

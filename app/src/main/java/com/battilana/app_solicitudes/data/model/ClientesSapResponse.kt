@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 data class ClientesSapResponse(
     val cardCode:String,
     val cardName:String,
-    val email:String,
+    val email:String?,
     val licTradNum:String
 )
