@@ -1,8 +1,10 @@
 package com.battilana.app_solicitudes.data.remote
 
+import com.battilana.app_solicitudes.data.model.ArticulosResponse
 import com.battilana.app_solicitudes.data.model.ClientesSapResponse
 import com.battilana.app_solicitudes.data.model.LoginRequest
 import com.battilana.app_solicitudes.data.model.LoginResponse
+import com.battilana.app_solicitudes.data.model.StockAlmacenResponse
 import com.battilana.app_solicitudes.data.model.UsuarioRequest
 import com.battilana.app_solicitudes.data.model.UsuarioResponse
 import com.battilana.app_solicitudes.data.model.UsuarioSapResponse
@@ -46,4 +48,10 @@ interface ApiService {
     // ---------- CONSULTAS SAP ----------
     @GET(value = "sap/listado/clientes/{idVendedor}")
     suspend fun listarClientesPorVendedor(@Path("idVendedor") idVendedor: Int): List<ClientesSapResponse>
+
+    @GET(value = "sap/listado/articulos/{idAlmacen}")
+    suspend fun listarArticulosPorAlmacen(@Path("idAlmacen") idAlmacen: String) : List<ArticulosResponse>
+
+    @GET(value = "sap/stock/articulo/{idArticulo}/almacen/{idAlmacen}")
+    suspend fun stockPorArticuloYAlmacen(@Path("idArticulo") idArticulo: String, @Path("idAlmacen") idAlmacen: String) : StockAlmacenResponse
 }

@@ -63,7 +63,6 @@ fun ProfileScreen(
     ) {
         Spacer(Modifier.height(40.dp))
         when{
-            loading -> CircularProgressIndicator()
             usuario != null -> {
                 ElevatedCard(
                     modifier = Modifier

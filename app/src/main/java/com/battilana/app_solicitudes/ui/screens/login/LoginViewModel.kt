@@ -65,8 +65,8 @@ class LoginViewModel @Inject constructor(
                 val response = loginUseCase(_uiStateLogin.value.username, _uiStateLogin.value.password)
                 val session = UserSession(
                     response.idUsuario,
-                    response.names,
-                    response.subnames,
+                    response.codigo,
+                    response.almacen,
                     response.token,
                     response.status
                 )

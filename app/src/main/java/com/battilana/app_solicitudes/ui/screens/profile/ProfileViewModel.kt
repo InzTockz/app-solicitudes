@@ -32,7 +32,6 @@ class ProfileViewModel @Inject constructor(
     fun cargarUsuario(){
         viewModelScope.launch {
             try {
-                _loading.value = true
                 val session = userPreferences.userSession.first()
                 val idUsuario = session?.idUsuario ?: return@launch
 
@@ -41,8 +40,6 @@ class ProfileViewModel @Inject constructor(
                 _uiStateUsuario.value = usuario
             } catch (e: Exception){
                 Log.i("ERROR_FIND_USER", "${e.message}")
-            } finally {
-                _loading.value = false
             }
         }
     }

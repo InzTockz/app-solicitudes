@@ -59,6 +59,7 @@ fun BattiTextField(
     shape: Shape = RoundedCornerShape(30),
     singleLine: Boolean = true,
     label: String,
+    readOnly: Boolean = false
 ) {
     OutlinedTextField(
         modifier = modifier
@@ -67,6 +68,7 @@ fun BattiTextField(
         onValueChange = onValueChange,
         shape = shape,
         singleLine = singleLine,
+        readOnly = readOnly,
         label = { Text(text = label) }
     )
 }

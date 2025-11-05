@@ -49,23 +49,26 @@ fun PedidoScreen(
     val clientes by pedidoViewModel.uiStateClienteSapResponse.collectAsState()
     var selectedClienteSap by remember { mutableStateOf<UiStateClienteItem?>(null) }
 
-    val productos by remember { mutableStateOf("") }
-    val titulos = remember { mutableListOf<String>(
-        "Producto", "Cantidad", "Almacen", "Accion"
-    )}
+    val articulos by pedidoViewModel.uiStateArticuloResponse.collectAsState()
+    var selectedArticulo by remember { mutableStateOf<UiStateArticuloItem?>(null) }
 
-    val elementos = listOf(
-        UiStateOptionItem(1, "Primer item"),
-        UiStateOptionItem(2, "Segundo item"),
-        UiStateOptionItem(3, "Tercero item"),
-        UiStateOptionItem(4, "Cuarto item"),
-        UiStateOptionItem(5, "Quinto item")
-    )
-    var selectedOption by remember { mutableStateOf<UiStateOptionItem?>(null) }
+    val stockResponse by pedidoViewModel.uiStateStockResponse.collectAsState()
+
+    var comentario by remember { mutableStateOf("") }
+
+    val articulosAgregados by pedidoViewModel.uiStatePedido.collectAsState()
+    var cantidad by remember { mutableStateOf("") }
+
+    val titulos = remember {
+        mutableListOf<String>(
+            "Producto", "Cantidad", "Accion"
+        )
+    }
 
     LaunchedEffect(Unit) {
         pedidoViewModel.cargarUsuariosSap()
         pedidoViewModel.cargarClientesSap()
+        pedidoViewModel.cargarArticulosSap()
     }
 
     Scaffold(
@@ -87,37 +90,44 @@ fun PedidoScreen(
                     UiStateOptionItem(it.idUsuarioSap.toInt(), it.nombreUsuario)
                 },
                 selectedOption = selectedUsuarioSap,
-                labelMapper = { it.label},
-                onSelected= {
+                labelMapper = { it.label },
+                onSelected = {
                     selectedUsuarioSap = it
                 }
             )
+            Spacer(Modifier.height(10.dp))
             BattiSelect(
                 label = "Seleccione un cliente",
                 options = clientes.map {
                     UiStateClienteItem(it.cardCode, it.cardName)
                 },
                 selectedOption = selectedClienteSap,
-                labelMapper = {it.cardName},
+                labelMapper = { it.cardName },
                 onSelected = {
                     selectedClienteSap = it
                 }
             )
-            Spacer(Modifier.height(8.dp))
-//            BattiSelect(
-//                label = "Seleccione un producto",
-//                options = elementos.map {
-//
-//                },
-//                selectedOptions = selectedOption,
-//                onSelected = { selectedOption = it}
-//            )
+            Spacer(Modifier.height(10.dp))
+            BattiSelect(
+                label = "Seleccione un producto",
+                options = articulos.map {
+                    UiStateArticuloItem(it.itemCode, it.itemName)
+                },
+                selectedOption = selectedArticulo,
+                labelMapper = { it.itemName },
+                onSelected = {
+                    selectedArticulo = it
+                    pedidoViewModel.cargarStockAlmacen(it.itemCode)
+                }
+            )
             Row {
                 BattiTextField(
                     modifier = Modifier
                         .weight(1f),
-                    value = "",
-                    onValueChange = {},
+                    value = cantidad,
+                    onValueChange = {
+                        cantidad = it
+                    },
                     label = "Cantidad",
                     shape = RoundedCornerShape(12.dp)
                 )
@@ -125,26 +135,47 @@ fun PedidoScreen(
                 BattiTextField(
                     modifier = Modifier
                         .weight(1f),
-                    value = "",
+                    value = stockResponse?.stockTotal?.toString() ?: "",
                     onValueChange = {},
                     label = "Stock",
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    readOnly = true
                 )
                 Spacer(Modifier.width(10.dp))
                 BattiTextField(
                     modifier = Modifier
                         .weight(1f),
-                    value = "",
+                    value = stockResponse?.unidadMedida ?: "",
                     onValueChange = {},
-                    label = "Almacen",
-                    shape = RoundedCornerShape(12.dp)
+                    label = "U. Medida",
+                    shape = RoundedCornerShape(12.dp),
+                    readOnly = true
                 )
             }
+            BattiTextField(
+                modifier = Modifier,
+                value = comentario,
+                onValueChange = {
+                    comentario = it
+                },
+                label = "Comentario",
+            )
             BattiButton(
-                onClick = {},
+                onClick = {
+                    selectedArticulo?.let {
+                        val cantidadDouble = cantidad.toDoubleOrNull() ?: 0.0
+                        if (cantidadDouble > 0) {
+                            pedidoViewModel.agregarArticulo(
+                                itemCode = it.itemCode,
+                                itemName = it.itemName,
+                                cantidad = cantidadDouble
+                            )
+                            cantidad = "" //limpiamos el campito eae
+                        }
+                    }
+                },
                 text = "Agregar Producto"
             )
-
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp)
@@ -161,33 +192,33 @@ fun PedidoScreen(
                             Text(text = response, Modifier.weight(1f))
                         }
                     }
-                    HorizontalDivider(thickness = 2.dp)
-                    Row (
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("Arroz", Modifier.weight(1f))
-                        Text("15", Modifier.weight(1f))
-                        Text("15", Modifier.weight(1f))
-                        TextButton(modifier = Modifier
-                            .weight(1f),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-                            onClick = {}) { Text(text = "Quitar")}
-                    }
-                    Row (
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("Avivat caninos x bolsa", Modifier.weight(1f))
-                        Text("20", Modifier.weight(1f))
-                        Text("15", Modifier.weight(1f))
-                        TextButton(modifier = Modifier
-                            .weight(1f),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-                            onClick = {}) { Text(text = "Quitar")}
+                    HorizontalDivider(thickness = 4.dp)
+
+                    articulosAgregados.forEach { articulo ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(articulo.itemName, Modifier.weight(1f))
+                            Text(articulo.cantidad.toString(), Modifier.weight(1f))
+//                            Text(articulo.impuesto, Modifier.weight(1f))
+                            TextButton(
+                                modifier = Modifier
+                                    .weight(1f),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                                onClick = {
+                                    pedidoViewModel.eliminarArticulo(articulo.itemCode)
+                                }
+                            )
+                            {
+                                Text(text = "Quitar")
+                            }
+                        }
+                        HorizontalDivider(thickness = 2.dp)
                     }
                 }
             }
-
-            Spacer(Modifier.height(50.dp))
+            Spacer(Modifier.height(20.dp))
             BattiButton(
                 onClick = {},
                 text = "Registrar Pedido"
