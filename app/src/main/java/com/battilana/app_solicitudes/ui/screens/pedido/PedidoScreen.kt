@@ -3,20 +3,28 @@
 package com.battilana.app_solicitudes.ui.screens.pedido
 
 import android.util.Log
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -31,12 +39,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.battilana.app_solicitudes.R
 import com.battilana.app_solicitudes.ui.components.BattiTextField
 import com.battilana.app_solicitudes.ui.components.BattiButton
 import com.battilana.app_solicitudes.ui.components.BattiOutLinedButton
 import com.battilana.app_solicitudes.ui.components.BattiSelect
+import com.battilana.app_solicitudes.ui.components.BattiText
 
 @Composable
 fun PedidoScreen(
@@ -58,12 +71,6 @@ fun PedidoScreen(
 
     val articulosAgregados by pedidoViewModel.uiStatePedido.collectAsState()
     var cantidad by remember { mutableStateOf("") }
-
-    val titulos = remember {
-        mutableListOf<String>(
-            "Producto", "Cantidad", "Accion"
-        )
-    }
 
     LaunchedEffect(Unit) {
         pedidoViewModel.cargarUsuariosSap()
@@ -120,6 +127,7 @@ fun PedidoScreen(
                     pedidoViewModel.cargarStockAlmacen(it.itemCode)
                 }
             )
+            Spacer(Modifier.height(10.dp))
             Row {
                 BattiTextField(
                     modifier = Modifier
@@ -177,56 +185,93 @@ fun PedidoScreen(
                 text = "Agregar Producto"
             )
             Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
+                modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                shape = RoundedCornerShape(12.dp),
+                elevation = CardDefaults.cardElevation(4.dp)
             ) {
                 Column(
-                    modifier = Modifier.padding(10.dp)
+                    modifier = Modifier.padding(12.dp)
                 )
                 {
                     Row(
-                        Modifier.fillMaxWidth(),
-//                        horizontalArrangement = Alignment.CenterHorizontally
+                        Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.primaryContainer).padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        titulos.forEach { response ->
-                            Text(text = response, Modifier.weight(1f))
-                        }
+                        BattiText("Articulo", modifier = Modifier.weight(2f))
+                        BattiText("Cantidad", modifier = Modifier.weight(2f))
+                        BattiText("Accion", modifier = Modifier.weight(1f))
                     }
-                    HorizontalDivider(thickness = 4.dp)
+                    Spacer(Modifier.height(4.dp))
+                    HorizontalDivider(color = Color.LightGray, thickness = 1.dp)
 
-                    articulosAgregados.forEach { articulo ->
+                    articulosAgregados.forEachIndexed { index, articulo ->
+
+                        val fondo = if(index % 2 == 0) Color(0xFFF7F7F7) else Color.Transparent
+
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth().background(fondo).padding(vertical = 8.dp),
                         ) {
-                            Text(articulo.itemName, Modifier.weight(1f))
-                            Text(articulo.cantidad.toString(), Modifier.weight(1f))
-//                            Text(articulo.impuesto, Modifier.weight(1f))
-                            TextButton(
-                                modifier = Modifier
-                                    .weight(1f),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-                                onClick = {
-                                    pedidoViewModel.eliminarArticulo(articulo.itemCode)
-                                }
+                            Text(
+                                articulo.itemName,
+                                Modifier
+                                    .weight(2f)
+                                    .padding(horizontal = 4.dp),
+                                textAlign = TextAlign.Center
                             )
-                            {
-                                Text(text = "Quitar")
-                            }
+                            Text(articulo.cantidad.toString(),
+                                Modifier
+                                    .weight(2f)
+                                    .padding(horizontal = 4.dp),
+                                textAlign = TextAlign.Center
+                            )
+                            Icon(
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .weight(1f)
+                                    .clickable{
+                                        pedidoViewModel.eliminarArticulo(index)
+                                    }
+                                    .align(Alignment.CenterVertically),
+                                painter = painterResource(id = R.drawable.ic_trash),
+                                contentDescription = "Trash",
+                                tint = Color.Red
+                            )
                         }
-                        HorizontalDivider(thickness = 2.dp)
+                        HorizontalDivider(color = Color.LightGray, thickness = 0.5.dp)
+                    }
+                    if(articulosAgregados.isEmpty()){
+                        Text(
+                            text = "No hay productos agregados",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp),
+                            color = Color.Gray,
+                            textAlign = TextAlign.Center
+                        )
                     }
                 }
             }
             Spacer(Modifier.height(20.dp))
             BattiButton(
-                onClick = {},
+                onClick = {
+                    val clienteId = selectedClienteSap?.cardCode ?: return@BattiButton
+                    val idUsuarioSap = selectedUsuarioSap?.id ?: return@BattiButton
+
+                    pedidoViewModel.agregarDraft(
+                        clienteId = clienteId,
+                        idUsuarioSap = idUsuarioSap,
+                        comentario = comentario.ifEmpty { "" }
+                    )
+                },
                 text = "Registrar Pedido"
             )
             Row {
                 BattiOutLinedButton(
                     modifier = Modifier.weight(1f),
-                    onClick = {},
+                    onClick = {
+                        pedidoViewModel.limpiarListaDeArticulos()
+                    },
                     text = "Limpiar tabla"
                 )
             }

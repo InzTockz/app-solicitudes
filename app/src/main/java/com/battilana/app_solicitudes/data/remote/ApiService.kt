@@ -2,6 +2,8 @@ package com.battilana.app_solicitudes.data.remote
 
 import com.battilana.app_solicitudes.data.model.ArticulosResponse
 import com.battilana.app_solicitudes.data.model.ClientesSapResponse
+import com.battilana.app_solicitudes.data.model.DraftRequest
+import com.battilana.app_solicitudes.data.model.DraftResponse
 import com.battilana.app_solicitudes.data.model.LoginRequest
 import com.battilana.app_solicitudes.data.model.LoginResponse
 import com.battilana.app_solicitudes.data.model.StockAlmacenResponse
@@ -54,4 +56,7 @@ interface ApiService {
 
     @GET(value = "sap/stock/articulo/{idArticulo}/almacen/{idAlmacen}")
     suspend fun stockPorArticuloYAlmacen(@Path("idArticulo") idArticulo: String, @Path("idAlmacen") idAlmacen: String) : StockAlmacenResponse
+
+    @POST(value = "sap/agregar/user-sap/{idUsuarioSap}")
+    suspend fun agregarDraft(@Body draftRequest: DraftRequest, @Path("idUsuarioSap") idUsuarioSap: Int) : DraftResponse
 }

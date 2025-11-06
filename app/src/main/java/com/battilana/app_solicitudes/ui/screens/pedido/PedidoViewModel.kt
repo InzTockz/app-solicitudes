@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.battilana.app_solicitudes.data.local.UserPreferences
 import com.battilana.app_solicitudes.data.model.ArticulosResponse
 import com.battilana.app_solicitudes.data.model.ClientesSapResponse
+import com.battilana.app_solicitudes.data.model.DraftDocumentLineRequest
+import com.battilana.app_solicitudes.data.model.DraftRequest
 import com.battilana.app_solicitudes.data.model.StockAlmacenResponse
 import com.battilana.app_solicitudes.data.model.UsuarioSapResponse
 import com.battilana.app_solicitudes.domain.usecase.SapUseCase
@@ -57,7 +59,7 @@ class PedidoViewModel @Inject constructor(
                 val session = userPreferences.userSession.first()
                 val idUsuario = session?.codigo ?: return@launch
                 Log.i("CLIENTE_ID", "$idUsuario")
-                val clientes = sapUseCase.listarClientesPorVendedor(if (idUsuario != null) idUsuario else 0)
+                val clientes = sapUseCase.listarClientesPorVendedor(if (idUsuario != null && idUsuario!=0) idUsuario else 0)
 
                 _uiStateClienteSapResponse.value = clientes
             } catch (e: Exception) {
@@ -72,7 +74,7 @@ class PedidoViewModel @Inject constructor(
                 val usuario = userPreferences.userSession.first()
                 val idAlmacen = usuario?.almacen ?: return@launch
 
-                val articulos = sapUseCase.listarArticulosPorAlmacen(if(idAlmacen.isEmpty()) "04" else idAlmacen)
+                val articulos = sapUseCase.listarArticulosPorAlmacen(if(idAlmacen == "" || idAlmacen.isEmpty()) "04" else idAlmacen)
                 _uiStateArticuloResponse.value = articulos
             } catch (e: Exception){
                 Log.i("ERROR_ARTICULOS", "${e.message}")
@@ -99,12 +101,53 @@ class PedidoViewModel @Inject constructor(
         _uiStatePedido.value = _uiStatePedido.value + producto
     }
 
-    fun eliminarArticulo(itemCode: String){
-        _uiStatePedido.value = _uiStatePedido.value.filterNot { it.itemCode == itemCode }
+    fun eliminarArticulo(index: Int){
+        val listaActual = _uiStatePedido.value.toMutableList()
+        if(index in listaActual.indices){
+            listaActual.removeAt(index)
+            _uiStatePedido.value = listaActual
+        }
     }
 
     fun limpiarListaDeArticulos(){
         _uiStatePedido.value = emptyList()
+    }
+
+    fun agregarDraft(
+        clienteId:String,
+        idUsuarioSap:Int,
+        comentario: String,
+    ){
+        viewModelScope.launch {
+            try {
+                val usuario = userPreferences.userSession.first()
+                val idVendedor = usuario?.codigo.toString()
+
+                val lineas = _uiStatePedido.value.map {
+                    DraftDocumentLineRequest(
+                        ItemCode = it.itemCode,
+                        Quantity = it.cantidad.toString(),
+                        TaxCode = it.impuesto
+                    )
+                }
+
+                val draftRequest = DraftRequest(
+                    CardCode = clienteId,
+                    DocObjectCode = "17",
+                    SalesPersonCode = idVendedor,
+                    DocumentLines = lineas,
+                    Comments = comentario
+                )
+
+                val draft = sapUseCase.agregarDraft(draftRequest, idUsuarioSap)
+
+                Log.i("DRAFT_SUCCESS", "Pedido registrado correctamente: $draft")
+
+                _uiStatePedido.value = emptyList()
+            } catch (e: Exception){
+                Log.i("ERROR_DRAFT", "${e.message}")
+            }
+        }
     }
 }
 
