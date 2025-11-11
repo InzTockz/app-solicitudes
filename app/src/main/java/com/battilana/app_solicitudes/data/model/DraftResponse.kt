@@ -6,12 +6,10 @@ import kotlinx.serialization.Serializable
 data class DraftResponse(
     val DocEntry: String,
     val DocNum:String,
-    val DocObjectCodeval :String,
+    val DocObjectCode :String,
     val CardCode: String,
     val CardName:String,
     val DocDate:String,
-    val DocDueDate:String,
-    val DocCurrency:String,
     val SalesPersonCode:String,
     val DocTotal:String,
     val Comments:String,

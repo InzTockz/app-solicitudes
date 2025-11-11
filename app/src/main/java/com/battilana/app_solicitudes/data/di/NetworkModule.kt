@@ -59,8 +59,8 @@ object NetworkModule {
     @Provides
     fun provideRetrofit(client: OkHttpClient, json: Json): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8080/api/v1/")
-            //.baseUrl("http://192.168.1.139:8080/api/v1/")
+            //.baseUrl("http://10.0.2.2:8080/api/v1/")
+            .baseUrl("http://192.168.1.139:8080/api/v1/")
             .client(client)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
@@ -68,7 +68,6 @@ object NetworkModule {
 
     //Parcear el JSON de Kotlin.Serialization
     @Provides
-//    @Singleton
     fun provideJson(): Json = Json {
         ignoreUnknownKeys = true
         isLenient = true

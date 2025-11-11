@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">app-solicitudes</string>
+    <string name="app_name">Pedidos Battilana</string>
     <string name="login_screen_text_title">SAP Pedidos Preliminares</string>
     <string name="login_screen_text_secondary">Ingresa tus credenciales para acceder al sistema</string>
     <string name="login_screen_textfield_text_usuario">Usuario</string>

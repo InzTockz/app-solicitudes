@@ -81,7 +81,7 @@ fun PedidoScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Nuevo pedido Preliminar") },
+                title = { Text(text = "Nuevo pedido") },
             )
         }
     ) { innerPadding ->
@@ -172,11 +172,13 @@ fun PedidoScreen(
                 onClick = {
                     selectedArticulo?.let {
                         val cantidadDouble = cantidad.toDoubleOrNull() ?: 0.0
+                        val idAlmacen = stockResponse?.codigoAlmacen ?: return@BattiButton
                         if (cantidadDouble > 0) {
                             pedidoViewModel.agregarArticulo(
                                 itemCode = it.itemCode,
                                 itemName = it.itemName,
-                                cantidad = cantidadDouble
+                                cantidad = cantidadDouble,
+                                whsCode = idAlmacen
                             )
                             cantidad = "" //limpiamos el campito eae
                         }

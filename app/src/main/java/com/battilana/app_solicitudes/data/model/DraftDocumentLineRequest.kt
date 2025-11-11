@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class DraftDocumentLineRequest(
     val ItemCode: String,
     val Quantity: String,
-    val TaxCode: String
+    val TaxCode: String,
+    val WarehouseCode: String?
 )

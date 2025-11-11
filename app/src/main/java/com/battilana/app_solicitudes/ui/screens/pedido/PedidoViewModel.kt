@@ -96,8 +96,8 @@ class PedidoViewModel @Inject constructor(
         }
     }
 
-    fun agregarArticulo(itemCode: String, cantidad: Double, itemName: String){
-        val producto = UiStatePedido(itemCode = itemCode, cantidad = cantidad, itemName = itemName)
+    fun agregarArticulo(itemCode: String, cantidad: Double, itemName: String, whsCode:String){
+        val producto = UiStatePedido(itemCode = itemCode, cantidad = cantidad, itemName = itemName, whsCode = whsCode)
         _uiStatePedido.value = _uiStatePedido.value + producto
     }
 
@@ -113,21 +113,19 @@ class PedidoViewModel @Inject constructor(
         _uiStatePedido.value = emptyList()
     }
 
-    fun agregarDraft(
-        clienteId:String,
-        idUsuarioSap:Int,
-        comentario: String,
-    ){
+    fun agregarDraft(clienteId:String, idUsuarioSap:Int, comentario: String){
         viewModelScope.launch {
             try {
                 val usuario = userPreferences.userSession.first()
                 val idVendedor = usuario?.codigo.toString()
+                //val idAlmacen = usuario?.almacen
 
                 val lineas = _uiStatePedido.value.map {
                     DraftDocumentLineRequest(
                         ItemCode = it.itemCode,
                         Quantity = it.cantidad.toString(),
-                        TaxCode = it.impuesto
+                        TaxCode = it.impuesto,
+                        WarehouseCode = it.whsCode
                     )
                 }
 
@@ -170,5 +168,6 @@ data class UiStatePedido(
     val itemCode:String,
     val itemName:String,
     val cantidad: Double,
+    val whsCode: String,
     val impuesto: String = "IGV"
 )
