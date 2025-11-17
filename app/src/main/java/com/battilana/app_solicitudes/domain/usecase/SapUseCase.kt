@@ -4,6 +4,7 @@ import com.battilana.app_solicitudes.data.model.ArticulosResponse
 import com.battilana.app_solicitudes.data.model.ClientesSapResponse
 import com.battilana.app_solicitudes.data.model.DraftRequest
 import com.battilana.app_solicitudes.data.model.DraftResponse
+import com.battilana.app_solicitudes.data.model.DraftSapResponse
 import com.battilana.app_solicitudes.data.model.StockAlmacenResponse
 import com.battilana.app_solicitudes.domain.repository.SapRepository
 import javax.inject.Inject
@@ -25,5 +26,9 @@ class SapUseCase @Inject constructor(
 
     suspend fun agregarDraft(draftRequest: DraftRequest, idUsuarioSap: Int): DraftResponse {
         return this.repository.agregarDraft(draftRequest, idUsuarioSap)
+    }
+
+    suspend fun listarDraftsPorVendedorYFecha(idVendedor: Int, fechaInicio:String, fechaFin:String): List<DraftSapResponse>{
+        return this.repository.listarDraftsPorVendedorYFecha(idVendedor, fechaInicio, fechaFin)
     }
 }

@@ -4,6 +4,7 @@ import com.battilana.app_solicitudes.data.model.ArticulosResponse
 import com.battilana.app_solicitudes.data.model.ClientesSapResponse
 import com.battilana.app_solicitudes.data.model.DraftRequest
 import com.battilana.app_solicitudes.data.model.DraftResponse
+import com.battilana.app_solicitudes.data.model.DraftSapResponse
 import com.battilana.app_solicitudes.data.model.LoginRequest
 import com.battilana.app_solicitudes.data.model.LoginResponse
 import com.battilana.app_solicitudes.data.model.StockAlmacenResponse
@@ -17,6 +18,8 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
+import java.time.LocalDate
 
 interface ApiService {
 
@@ -52,11 +55,24 @@ interface ApiService {
     suspend fun listarClientesPorVendedor(@Path("idVendedor") idVendedor: Int): List<ClientesSapResponse>
 
     @GET(value = "sap/listado/articulos/{idAlmacen}")
-    suspend fun listarArticulosPorAlmacen(@Path("idAlmacen") idAlmacen: String) : List<ArticulosResponse>
+    suspend fun listarArticulosPorAlmacen(@Path("idAlmacen") idAlmacen: String): List<ArticulosResponse>
 
     @GET(value = "sap/stock/articulo/{idArticulo}/almacen/{idAlmacen}")
-    suspend fun stockPorArticuloYAlmacen(@Path("idArticulo") idArticulo: String, @Path("idAlmacen") idAlmacen: String) : StockAlmacenResponse
+    suspend fun stockPorArticuloYAlmacen(
+        @Path("idArticulo") idArticulo: String,
+        @Path("idAlmacen") idAlmacen: String
+    ): StockAlmacenResponse
 
     @POST(value = "sap/agregar/user-sap/{idUsuarioSap}")
-    suspend fun agregarDraft(@Body draftRequest: DraftRequest, @Path("idUsuarioSap") idUsuarioSap: Int) : DraftResponse
+    suspend fun agregarDraft(
+        @Body draftRequest: DraftRequest,
+        @Path("idUsuarioSap") idUsuarioSap: Int
+    ): DraftResponse
+
+    @GET(value = "sap/listar-draft/{idVendedor}")
+    suspend fun listarDraftsPorVendedorYFecha(
+        @Path("idVendedor") idVendedor: Int,
+        @Query("fechaInicio") fechaInicio: String,
+        @Query("fechaFin") fechaFin: String
+    ): List<DraftSapResponse>
 }

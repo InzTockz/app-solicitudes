@@ -45,7 +45,6 @@ fun BattiElevatedCardSection(
                 Button(
                     shape = RoundedCornerShape(8.dp),
                     onClick = buttonItem.actionOnClick,
-                    //modifier = Modifier.fillMaxWidth(),
                     contentPadding = PaddingValues(10.dp),
                     enabled = false
                 ) {
