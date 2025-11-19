@@ -160,14 +160,7 @@ fun PedidoScreen(
                     readOnly = true
                 )
             }
-            BattiTextField(
-                modifier = Modifier,
-                value = comentario,
-                onValueChange = {
-                    comentario = it
-                },
-                label = "Comentario",
-            )
+            Spacer(Modifier.height(5.dp))
             BattiButton(
                 onClick = {
                     selectedArticulo?.let {
@@ -254,7 +247,16 @@ fun PedidoScreen(
                     }
                 }
             }
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(8.dp))
+            BattiTextField(
+                modifier = Modifier,
+                value = comentario,
+                onValueChange = {
+                    comentario = it
+                },
+                label = "Comentario",
+            )
+            Spacer(Modifier.height(10.dp))
             BattiButton(
                 onClick = {
                     val clienteId = selectedClienteSap?.cardCode ?: return@BattiButton
