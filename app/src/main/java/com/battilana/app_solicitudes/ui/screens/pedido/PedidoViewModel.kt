@@ -14,6 +14,8 @@ import com.battilana.app_solicitudes.domain.usecase.SapUseCase
 import com.battilana.app_solicitudes.domain.usecase.UsuarioSapUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -29,7 +31,8 @@ class PedidoViewModel @Inject constructor(
     private val _uiStateUsuarioSapResponse = MutableStateFlow<List<UsuarioSapResponse>>(emptyList())
     val uiStateUsuarioResponse: StateFlow<List<UsuarioSapResponse>> = _uiStateUsuarioSapResponse
 
-    private val _uiStateClienteSapResponse = MutableStateFlow<List<ClientesSapResponse>>(emptyList())
+    private val _uiStateClienteSapResponse =
+        MutableStateFlow<List<ClientesSapResponse>>(emptyList())
     val uiStateClienteSapResponse: StateFlow<List<ClientesSapResponse>> = _uiStateClienteSapResponse
 
     private val _uiStateArticuloResponse = MutableStateFlow<List<ArticulosResponse>>(emptyList())
@@ -38,8 +41,10 @@ class PedidoViewModel @Inject constructor(
     private val _uiStateStockResponse = MutableStateFlow<StockAlmacenResponse?>(null)
     val uiStateStockResponse: StateFlow<StockAlmacenResponse?> = _uiStateStockResponse
 
-    private val _uiStatePedido = MutableStateFlow< List<UiStatePedido>>(emptyList())
+    private val _uiStatePedido = MutableStateFlow<List<UiStatePedido>>(emptyList())
     val uiStatePedido: StateFlow<List<UiStatePedido>> = _uiStatePedido
+
+    private var searchJob: Job? = null
 
     fun cargarUsuariosSap() {
         viewModelScope.launch {
@@ -59,7 +64,8 @@ class PedidoViewModel @Inject constructor(
                 val session = userPreferences.userSession.first()
                 val idUsuario = session?.codigo ?: return@launch
                 Log.i("CLIENTE_ID", "$idUsuario")
-                val clientes = sapUseCase.listarClientesPorVendedor(if (idUsuario != null && idUsuario!=0) idUsuario else 0)
+                val clientes =
+                    sapUseCase.listarClientesPorVendedor(if (idUsuario != null && idUsuario != 0) idUsuario else 0)
 
                 _uiStateClienteSapResponse.value = clientes
             } catch (e: Exception) {
@@ -68,52 +74,73 @@ class PedidoViewModel @Inject constructor(
         }
     }
 
-    fun cargarArticulosSap(){
-        viewModelScope.launch {
+    fun buscarAreticulos(query: String) {
+
+        searchJob?.cancel()
+
+        searchJob = viewModelScope.launch {
+            if (query.length < 2) {
+                _uiStateArticuloResponse.value = emptyList()
+                return@launch
+            }
+
+            delay(300)
+
             try {
                 val usuario = userPreferences.userSession.first()
-                val idAlmacen = usuario?.almacen ?: return@launch
+                val idAlmacen = usuario?.almacen ?: "04"
 
-                val articulos = sapUseCase.listarArticulosPorAlmacen(if(idAlmacen == "" || idAlmacen.isEmpty()) "04" else idAlmacen)
+                val articulos = sapUseCase.listarArticulosPorAlmacen(
+                    idAlmacen = idAlmacen,
+                    nombre = query
+                )
                 _uiStateArticuloResponse.value = articulos
-            } catch (e: Exception){
-                Log.i("ERROR_ARTICULOS", "${e.message}")
+            } catch (e: Exception) {
+                Log.i("ERROR_BUSQUEDA", "No se pudo cargar la informacion")
             }
         }
     }
 
-    fun cargarStockAlmacen(itemCode: String){
+    fun cargarStockAlmacen(itemCode: String) {
         viewModelScope.launch {
             try {
                 val usuario = userPreferences.userSession.first()
                 val idAlmacen = usuario?.almacen ?: return@launch
 
-                val stock = sapUseCase.stockPorArticuloYAlmacen(itemCode, if(idAlmacen.isEmpty()) "04" else idAlmacen)
+                val stock = sapUseCase.stockPorArticuloYAlmacen(
+                    itemCode,
+                    if (idAlmacen.isEmpty()) "04" else idAlmacen
+                )
                 _uiStateStockResponse.value = stock
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 Log.i("ERROR_STOCK_ALMACEN", "${e.message}")
             }
         }
     }
 
-    fun agregarArticulo(itemCode: String, cantidad: Double, itemName: String, whsCode:String){
-        val producto = UiStatePedido(itemCode = itemCode, cantidad = cantidad, itemName = itemName, whsCode = whsCode)
+    fun agregarArticulo(itemCode: String, cantidad: Double, itemName: String, whsCode: String) {
+        val producto = UiStatePedido(
+            itemCode = itemCode,
+            cantidad = cantidad,
+            itemName = itemName,
+            whsCode = whsCode
+        )
         _uiStatePedido.value = _uiStatePedido.value + producto
     }
 
-    fun eliminarArticulo(index: Int){
+    fun eliminarArticulo(index: Int) {
         val listaActual = _uiStatePedido.value.toMutableList()
-        if(index in listaActual.indices){
+        if (index in listaActual.indices) {
             listaActual.removeAt(index)
             _uiStatePedido.value = listaActual
         }
     }
 
-    fun limpiarListaDeArticulos(){
+    fun limpiarListaDeArticulos() {
         _uiStatePedido.value = emptyList()
     }
 
-    fun agregarDraft(clienteId:String, idUsuarioSap:Int, comentario: String){
+    fun agregarDraft(clienteId: String, idUsuarioSap: Int, comentario: String) {
         viewModelScope.launch {
             try {
                 val usuario = userPreferences.userSession.first()
@@ -142,7 +169,7 @@ class PedidoViewModel @Inject constructor(
                 Log.i("DRAFT_SUCCESS", "Pedido registrado correctamente: $draft")
 
                 _uiStatePedido.value = emptyList()
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 Log.i("ERROR_DRAFT", "${e.message}")
             }
         }
@@ -165,8 +192,8 @@ data class UiStateArticuloItem(
 )
 
 data class UiStatePedido(
-    val itemCode:String,
-    val itemName:String,
+    val itemCode: String,
+    val itemName: String,
     val cantidad: Double,
     val whsCode: String,
     val impuesto: String = "IGV"

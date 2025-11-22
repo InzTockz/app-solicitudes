@@ -35,23 +35,14 @@ fun <T> BattiSelect(
     singleLine: Boolean = true
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var searchQuery by remember { mutableStateOf("") }
-
-    val filteredOptions = remember(searchQuery, options) {
-        if (searchQuery.isEmpty()) options
-        else options.filter {
-            labelMapper(it).contains(searchQuery, ignoreCase = true)
-        }
-    }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded }
     ) {
         TextField(
-            value = searchQuery.ifEmpty { selectedOption?.let(labelMapper) ?: "" },
+            value = selectedOption?.let(labelMapper) ?: "" ,
             onValueChange = {
-                searchQuery = it
                 expanded = true
             },
             label = { Text(text = label) },
@@ -60,51 +51,83 @@ fun <T> BattiSelect(
                 .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true)
                 .fillMaxWidth(),
             shape = RoundedCornerShape(10.dp),
-            singleLine = singleLine
+            singleLine = singleLine,
+            readOnly = true
         )
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
             modifier = Modifier.heightIn(max = 300.dp)
         ) {
-
-            if (filteredOptions.isEmpty()) {
+            options.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(text = "Sin resultados") },
+                    text = { Text(text = labelMapper(option)) },
+                    onClick = {
+                        onSelected(option)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun <T> BattiSelectDinamic(
+    label: String,
+    options: List<T>,
+    selectedOption: T?,
+    labelMapper: (T) -> String,
+    onSelected: (T) -> Unit,
+    onSearch: (String) -> Unit,
+    singleLine: Boolean = true
+){
+    var expanded by remember { mutableStateOf(false) }
+    var textValue by remember { mutableStateOf("") }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded}
+    ) {
+        TextField(
+            value = if(expanded) textValue else selectedOption?.let(labelMapper) ?: "",
+            onValueChange = { query ->
+                textValue = query
+                expanded = true
+                onSearch(query)
+            },
+            label = { Text(text = label)},
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded)},
+            modifier = Modifier
+                .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(10.dp),
+            singleLine = singleLine
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false},
+            modifier = Modifier.heightIn(max = 300.dp)
+        ) {
+            if (options.isEmpty()){
+                DropdownMenuItem(
+                    text = { Text(text = "Sin resultados")},
                     onClick = {}
                 )
             } else {
-                filteredOptions.forEach { option ->
+                options.forEach { option ->
                     DropdownMenuItem(
                         text = {Text(text = labelMapper(option))},
                         onClick = {
                             onSelected(option)
-                            searchQuery = labelMapper(option)
+                            textValue = labelMapper(option)
                             expanded = false
                         }
                     )
                 }
             }
-
-//            filteredOptions.forEach { option ->
-//                DropdownMenuItem(
-//                    text = {Text(text = labelMapper(option))},
-//                    onClick = {
-//                        onSelected(option)
-//                        searchQuery = labelMapper(option)
-//                        expanded = false
-//                    }
-//                )
-//            }
-//            options.forEach { option ->
-//                DropdownMenuItem(
-//                    text = { Text(text = labelMapper(option)) },
-//                    onClick = {
-//                        onSelected(option)
-//                        expanded = false
-//                    }
-//                )
-//            }
         }
     }
 }

@@ -54,8 +54,11 @@ interface ApiService {
     @GET(value = "sap/listado/clientes/{idVendedor}")
     suspend fun listarClientesPorVendedor(@Path("idVendedor") idVendedor: Int): List<ClientesSapResponse>
 
-    @GET(value = "sap/listado/articulos/{idAlmacen}")
-    suspend fun listarArticulosPorAlmacen(@Path("idAlmacen") idAlmacen: String): List<ArticulosResponse>
+    @GET(value = "sap/lista-articulos/{idAlmacen}")
+    suspend fun listarArticulosPorAlmacen(
+        @Path("idAlmacen") idAlmacen: String,
+        @Query("nombre") nombre: String? = null
+    ): List<ArticulosResponse>
 
     @GET(value = "sap/stock/articulo/{idArticulo}/almacen/{idAlmacen}")
     suspend fun stockPorArticuloYAlmacen(

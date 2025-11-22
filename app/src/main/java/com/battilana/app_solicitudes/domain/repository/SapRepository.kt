@@ -10,7 +10,7 @@ import com.battilana.app_solicitudes.data.model.StockAlmacenResponse
 interface SapRepository {
 
     suspend fun listarClientesPorVendedor(idVendedor: Int) : List<ClientesSapResponse>
-    suspend fun listarArticulosPorAlmacen(idAlmacen: String): List<ArticulosResponse>
+    suspend fun listarArticulosPorAlmacen(idAlmacen: String, nombre: String): List<ArticulosResponse>
     suspend fun stockPorArticuloYAlmacen(idArticulo:String, idAlmacen:String) : StockAlmacenResponse
     suspend fun agregarDraft(draftRequest: DraftRequest, idUsuarioSap: Int) : DraftResponse
     suspend fun listarDraftsPorVendedorYFecha(idVendedor: Int, fechaInicio: String, fechaFin: String): List<DraftSapResponse>

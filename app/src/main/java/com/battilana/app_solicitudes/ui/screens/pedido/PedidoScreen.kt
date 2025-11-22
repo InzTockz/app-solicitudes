@@ -49,6 +49,7 @@ import com.battilana.app_solicitudes.ui.components.BattiTextField
 import com.battilana.app_solicitudes.ui.components.BattiButton
 import com.battilana.app_solicitudes.ui.components.BattiOutLinedButton
 import com.battilana.app_solicitudes.ui.components.BattiSelect
+import com.battilana.app_solicitudes.ui.components.BattiSelectDinamic
 import com.battilana.app_solicitudes.ui.components.BattiText
 
 @Composable
@@ -75,7 +76,7 @@ fun PedidoScreen(
     LaunchedEffect(Unit) {
         pedidoViewModel.cargarUsuariosSap()
         pedidoViewModel.cargarClientesSap()
-        pedidoViewModel.cargarArticulosSap()
+//        pedidoViewModel.cargarArticulosSap()
     }
 
     Scaffold(
@@ -115,7 +116,7 @@ fun PedidoScreen(
                 }
             )
             Spacer(Modifier.height(10.dp))
-            BattiSelect(
+            BattiSelectDinamic(
                 label = "Seleccione un producto",
                 options = articulos.map {
                     UiStateArticuloItem(it.itemCode, it.itemName)
@@ -125,6 +126,9 @@ fun PedidoScreen(
                 onSelected = {
                     selectedArticulo = it
                     pedidoViewModel.cargarStockAlmacen(it.itemCode)
+                },
+                onSearch = { query ->
+                    pedidoViewModel.buscarAreticulos(query)
                 }
             )
             Spacer(Modifier.height(10.dp))

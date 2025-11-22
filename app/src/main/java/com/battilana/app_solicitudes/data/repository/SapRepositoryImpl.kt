@@ -18,7 +18,7 @@ class SapRepositoryImpl @Inject constructor(
         return this.api.listarClientesPorVendedor(idVendedor)
     }
 
-    override suspend fun listarArticulosPorAlmacen(idAlmacen: String): List<ArticulosResponse> {
+    override suspend fun listarArticulosPorAlmacen(idAlmacen: String, nombre: String): List<ArticulosResponse> {
         return this.api.listarArticulosPorAlmacen(idAlmacen)
     }
 
