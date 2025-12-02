@@ -27,7 +27,7 @@ class HistorialPedidosViewModel @Inject constructor(
             try {
                 val usuario = userPreferences.userSession.first()
                 val idVendedor = usuario?.codigo ?: return@launch
-                Log.i("USER_DRAFT", "Su id es: ${idVendedor}")
+
                 _uiStateDraftSap.value =
                     sapUseCase.listarDraftsPorVendedorYFecha(idVendedor, "2025-11-01", "2025-12-31")
 

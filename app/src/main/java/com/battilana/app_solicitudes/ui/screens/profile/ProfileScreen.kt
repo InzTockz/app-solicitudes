@@ -2,6 +2,7 @@ package com.battilana.app_solicitudes.ui.screens.profile
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -40,6 +41,7 @@ import com.battilana.app_solicitudes.R
 import com.battilana.app_solicitudes.navigate.Login
 import com.battilana.app_solicitudes.navigate.SessionViewModel
 import com.battilana.app_solicitudes.ui.components.BattiButtonSimple
+import com.battilana.app_solicitudes.ui.theme.battiOrangeColor
 
 @Composable
 fun ProfileScreen(
@@ -57,6 +59,7 @@ fun ProfileScreen(
 
     Column(
         modifier = Modifier
+            .background(Color.White)
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
             .verticalScroll(rememberScrollState()),
@@ -151,7 +154,7 @@ fun ProfileScreen(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Red,
+                                containerColor = battiOrangeColor,
                                 contentColor = Color.White
                             ),
                             contentPadding = PaddingValues(10.dp),

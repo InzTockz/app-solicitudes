@@ -52,6 +52,7 @@ fun HistorialPedidosScreen(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color.White)
     ) {
         stickyHeader {
             Row(

@@ -8,5 +8,10 @@ data class UserSession (
     val codigo: Int?,
     val almacen:String?,
     val token:String,
-    val status:String
+    val status:String,
+    val expiresAt: Long? = null
 )
+
+fun UserSession.isExpired(now: Long = System.currentTimeMillis()): Boolean{
+    return expiresAt?.let { now >= it } ?: true
+}

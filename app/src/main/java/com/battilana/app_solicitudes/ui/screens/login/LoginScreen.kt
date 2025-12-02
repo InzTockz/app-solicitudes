@@ -1,7 +1,9 @@
 package com.battilana.app_solicitudes.ui.screens.login
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,6 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.battilana.app_solicitudes.R
 import com.battilana.app_solicitudes.ui.components.BattiTextField
 import com.battilana.app_solicitudes.ui.components.BattiTextFieldPassword
+import com.battilana.app_solicitudes.ui.theme.battiOrangeColor
 
 @Composable
 fun LoginScreen(
@@ -43,6 +46,7 @@ fun LoginScreen(
     ) { innerPadding ->
         Column(
             modifier = Modifier
+                .background(color = battiOrangeColor)
                 .padding(innerPadding)
                 .padding(horizontal = 20.dp)
                 .fillMaxSize(),
@@ -87,6 +91,19 @@ fun LoginScreen(
                         iconButtonAction = { loginViewModel.onShowPasswordChange()},
                         iconImage = uiState.viewPassword
                     )
+                    if(uiState.error!=null){
+                        Spacer(Modifier.height(8.dp))
+                        Column (
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = uiState.error ?: "",
+                                color = Color.Red,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                    }
                     Spacer(Modifier.height(20.dp))
                     Button(
                         modifier = Modifier.fillMaxWidth(),

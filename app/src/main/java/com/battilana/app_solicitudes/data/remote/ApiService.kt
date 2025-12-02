@@ -11,6 +11,7 @@ import com.battilana.app_solicitudes.data.model.StockAlmacenResponse
 import com.battilana.app_solicitudes.data.model.UsuarioRequest
 import com.battilana.app_solicitudes.data.model.UsuarioResponse
 import com.battilana.app_solicitudes.data.model.UsuarioSapResponse
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -54,10 +55,16 @@ interface ApiService {
     @GET(value = "sap/listado/clientes/{idVendedor}")
     suspend fun listarClientesPorVendedor(@Path("idVendedor") idVendedor: Int): List<ClientesSapResponse>
 
-    @GET(value = "sap/lista-articulos/{idAlmacen}")
+    @GET(value = "sap/listar-clientes/vendedor/{idVendedor}")
+    suspend fun listarClientesPorVendedorYCardName(
+        @Path("idVendedor") idVendedor: Int,
+        @Query("cardName") cardName: String
+    ): List<ClientesSapResponse>
+
+    @GET(value = "sap/listar-articulos/{idAlmacen}")
     suspend fun listarArticulosPorAlmacen(
         @Path("idAlmacen") idAlmacen: String,
-        @Query("nombre") nombre: String? = null
+        @Query("nombre") nombre: String
     ): List<ArticulosResponse>
 
     @GET(value = "sap/stock/articulo/{idArticulo}/almacen/{idAlmacen}")
@@ -70,7 +77,7 @@ interface ApiService {
     suspend fun agregarDraft(
         @Body draftRequest: DraftRequest,
         @Path("idUsuarioSap") idUsuarioSap: Int
-    ): DraftResponse
+    ): Response<DraftResponse>
 
     @GET(value = "sap/listar-draft/{idVendedor}")
     suspend fun listarDraftsPorVendedorYFecha(

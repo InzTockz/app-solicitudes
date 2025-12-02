@@ -17,8 +17,9 @@ class UserPreferences(private val context: Context, private val json: Json) {
         private val USER_SESSION_KEY = stringPreferencesKey("user_session")
     }
 
-    suspend fun saveUserSession(userSession: UserSession){
-        val jsonString = json.encodeToString(userSession)
+    suspend fun saveUserSession(userSession: UserSession) {
+//        val jsonString = json.encodeToString(userSession)
+        val jsonString = json.encodeToString(UserSession.serializer(), userSession)
         context.dataStore.edit { preferences ->
             preferences[USER_SESSION_KEY] = jsonString
         }
@@ -27,14 +28,15 @@ class UserPreferences(private val context: Context, private val json: Json) {
     val userSession: Flow<UserSession?> = context.dataStore.data.map { preferences ->
         preferences[USER_SESSION_KEY]?.let { jsonString ->
             try {
-                json.decodeFromString<UserSession>(jsonString)
-            } catch (_: Exception){
+//                json.decodeFromString<UserSession>(jsonString)
+                json.decodeFromString(UserSession.serializer(), jsonString)
+            } catch (_: Exception) {
                 null
             }
         }
     }
 
-    suspend fun clearSession(){
+    suspend fun clearSession() {
         context.dataStore.edit { it.clear() }
     }
 }

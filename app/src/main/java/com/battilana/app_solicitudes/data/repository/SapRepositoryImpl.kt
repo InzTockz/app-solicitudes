@@ -8,6 +8,7 @@ import com.battilana.app_solicitudes.data.model.DraftSapResponse
 import com.battilana.app_solicitudes.data.model.StockAlmacenResponse
 import com.battilana.app_solicitudes.data.remote.ApiService
 import com.battilana.app_solicitudes.domain.repository.SapRepository
+import retrofit2.Response
 import javax.inject.Inject
 
 class SapRepositoryImpl @Inject constructor(
@@ -18,8 +19,15 @@ class SapRepositoryImpl @Inject constructor(
         return this.api.listarClientesPorVendedor(idVendedor)
     }
 
+    override suspend fun listarClientesPorVendedorYCardName(
+        idVendedor: Int,
+        cardName: String
+    ): List<ClientesSapResponse> {
+        return this.api.listarClientesPorVendedorYCardName(idVendedor, cardName)
+    }
+
     override suspend fun listarArticulosPorAlmacen(idAlmacen: String, nombre: String): List<ArticulosResponse> {
-        return this.api.listarArticulosPorAlmacen(idAlmacen)
+        return this.api.listarArticulosPorAlmacen(idAlmacen, nombre)
     }
 
     override suspend fun stockPorArticuloYAlmacen(
@@ -32,7 +40,7 @@ class SapRepositoryImpl @Inject constructor(
     override suspend fun agregarDraft(
         draftRequest: DraftRequest,
         idUsuarioSap: Int
-    ): DraftResponse {
+    ): Response<DraftResponse> {
         return this.api.agregarDraft(draftRequest, idUsuarioSap)
     }
 

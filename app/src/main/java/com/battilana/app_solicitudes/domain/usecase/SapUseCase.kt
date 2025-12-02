@@ -7,6 +7,7 @@ import com.battilana.app_solicitudes.data.model.DraftResponse
 import com.battilana.app_solicitudes.data.model.DraftSapResponse
 import com.battilana.app_solicitudes.data.model.StockAlmacenResponse
 import com.battilana.app_solicitudes.domain.repository.SapRepository
+import retrofit2.Response
 import javax.inject.Inject
 
 class SapUseCase @Inject constructor(
@@ -14,6 +15,10 @@ class SapUseCase @Inject constructor(
 ) {
     suspend fun listarClientesPorVendedor(idVendedor: Int): List<ClientesSapResponse>{
         return this.repository.listarClientesPorVendedor(idVendedor)
+    }
+
+    suspend fun listarClientesPorVendedorYCardName(idVendedor: Int, cardName: String): List<ClientesSapResponse>{
+        return this.repository.listarClientesPorVendedorYCardName(idVendedor, cardName)
     }
 
     suspend fun listarArticulosPorAlmacen(idAlmacen: String, nombre: String): List<ArticulosResponse>{
@@ -24,7 +29,7 @@ class SapUseCase @Inject constructor(
         return this.repository.stockPorArticuloYAlmacen(idArticulo, idAlmacen)
     }
 
-    suspend fun agregarDraft(draftRequest: DraftRequest, idUsuarioSap: Int): DraftResponse {
+    suspend fun agregarDraft(draftRequest: DraftRequest, idUsuarioSap: Int): Response<DraftResponse> {
         return this.repository.agregarDraft(draftRequest, idUsuarioSap)
     }
 

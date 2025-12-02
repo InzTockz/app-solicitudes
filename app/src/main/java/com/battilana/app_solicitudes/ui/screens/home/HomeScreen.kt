@@ -15,6 +15,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.battilana.app_solicitudes.R
@@ -22,12 +23,13 @@ import com.battilana.app_solicitudes.ui.components.BattiButtonItem
 import com.battilana.app_solicitudes.ui.components.BattiElevatedCardNotification
 import com.battilana.app_solicitudes.ui.components.BattiElevatedCardSection
 import com.battilana.app_solicitudes.ui.components.BattiTopAppBarHome
+import com.battilana.app_solicitudes.ui.theme.battiOrangeColor
 
 @Composable
 fun HomeScreen() {
     Scaffold(
         topBar = {
-            BattiTopAppBarHome(text = "Dashboard")
+            BattiTopAppBarHome(text = "Dashboard", contentColor = Color.Black)
         }
     ) { innerPadding ->
         Column(
@@ -36,6 +38,7 @@ fun HomeScreen() {
                 .padding(innerPadding)
                 .padding(horizontal = 20.dp)
         ) {
+            Spacer(Modifier.height(15.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center

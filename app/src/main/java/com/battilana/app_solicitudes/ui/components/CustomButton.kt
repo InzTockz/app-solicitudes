@@ -1,5 +1,6 @@
 package com.battilana.app_solicitudes.ui.components
 
+import android.graphics.Color
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,12 +17,14 @@ fun BattiButton(
     modifier: Modifier = Modifier,
     onClick:() -> Unit,
     shape: Shape = RoundedCornerShape(25),
-    text: String
+    text: String,
+    colors: ButtonColors = ButtonDefaults.buttonColors()
 ){
     Button(
         modifier = modifier.fillMaxWidth(),
         onClick = onClick,
-        shape = shape
+        shape = shape,
+        colors = colors
     ) {
         Text(text = text)
     }

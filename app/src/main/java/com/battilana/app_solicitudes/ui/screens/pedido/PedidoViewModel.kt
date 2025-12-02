@@ -8,6 +8,7 @@ import com.battilana.app_solicitudes.data.model.ArticulosResponse
 import com.battilana.app_solicitudes.data.model.ClientesSapResponse
 import com.battilana.app_solicitudes.data.model.DraftDocumentLineRequest
 import com.battilana.app_solicitudes.data.model.DraftRequest
+import com.battilana.app_solicitudes.data.model.ErrorResponse
 import com.battilana.app_solicitudes.data.model.StockAlmacenResponse
 import com.battilana.app_solicitudes.data.model.UsuarioSapResponse
 import com.battilana.app_solicitudes.domain.usecase.SapUseCase
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 
 @HiltViewModel
 class PedidoViewModel @Inject constructor(
@@ -44,6 +46,14 @@ class PedidoViewModel @Inject constructor(
     private val _uiStatePedido = MutableStateFlow<List<UiStatePedido>>(emptyList())
     val uiStatePedido: StateFlow<List<UiStatePedido>> = _uiStatePedido
 
+    //CONTROLAR EL ERROR
+    private val _uiStateError = MutableStateFlow<String?>(null)
+    val uiStateError: StateFlow<String?> = _uiStateError
+
+    //CONTROLAR EL SUCCESS
+    private val _uiStateDraftSuccess = MutableStateFlow<Boolean?>(null)
+    val uiStateDraftSuccess: StateFlow<Boolean?> = _uiStateDraftSuccess
+
     private var searchJob: Job? = null
 
     fun cargarUsuariosSap() {
@@ -58,18 +68,28 @@ class PedidoViewModel @Inject constructor(
         }
     }
 
-    fun cargarClientesSap() {
-        viewModelScope.launch {
-            try {
-                val session = userPreferences.userSession.first()
-                val idUsuario = session?.codigo ?: return@launch
-                Log.i("CLIENTE_ID", "$idUsuario")
-                val clientes =
-                    sapUseCase.listarClientesPorVendedor(if (idUsuario != null && idUsuario != 0) idUsuario else 0)
+    fun buscarClientesSap(query: String) {
 
-                _uiStateClienteSapResponse.value = clientes
-            } catch (e: Exception) {
-                Log.i("ERROR CLIENTE", "${e.message}")
+        searchJob?.cancel()
+
+        searchJob = viewModelScope.launch {
+            if(query.length<1){
+                _uiStateArticuloResponse.value = emptyList()
+                return@launch
+            } else {
+                try {
+                    val session = userPreferences.userSession.first()
+                    val codVendedor = session?.codigo ?: return@launch
+
+                    val clientes = sapUseCase.listarClientesPorVendedorYCardName(
+                        idVendedor = codVendedor,
+                        cardName = query
+                    )
+
+                    _uiStateClienteSapResponse.value = clientes
+                } catch (e: Exception){
+                    Log.i("ERROR_CLIENTE", "${e.message}")
+                }
             }
         }
     }
@@ -79,24 +99,22 @@ class PedidoViewModel @Inject constructor(
         searchJob?.cancel()
 
         searchJob = viewModelScope.launch {
-            if (query.length < 2) {
+            if (query.length < 1) {
                 _uiStateArticuloResponse.value = emptyList()
                 return@launch
-            }
+            } else {
+                try {
+                    val usuario = userPreferences.userSession.first()
+                    val idAlmacen = usuario?.almacen ?: "04"
 
-            delay(300)
-
-            try {
-                val usuario = userPreferences.userSession.first()
-                val idAlmacen = usuario?.almacen ?: "04"
-
-                val articulos = sapUseCase.listarArticulosPorAlmacen(
-                    idAlmacen = idAlmacen,
-                    nombre = query
-                )
-                _uiStateArticuloResponse.value = articulos
-            } catch (e: Exception) {
-                Log.i("ERROR_BUSQUEDA", "No se pudo cargar la informacion")
+                    val articulos = sapUseCase.listarArticulosPorAlmacen(
+                        idAlmacen = idAlmacen,
+                        nombre = query
+                    )
+                    _uiStateArticuloResponse.value = articulos
+                } catch (e: Exception) {
+                    Log.i("ERROR_BUSQUEDA", "No se pudo cargar la informacion: ${e.message}")
+                }
             }
         }
     }
@@ -140,6 +158,10 @@ class PedidoViewModel @Inject constructor(
         _uiStatePedido.value = emptyList()
     }
 
+    fun limpiarStock(){
+        _uiStateStockResponse.value = null
+    }
+
     fun agregarDraft(clienteId: String, idUsuarioSap: Int, comentario: String) {
         viewModelScope.launch {
             try {
@@ -164,13 +186,39 @@ class PedidoViewModel @Inject constructor(
                     Comments = comentario
                 )
 
-                val draft = sapUseCase.agregarDraft(draftRequest, idUsuarioSap)
+                val response = sapUseCase.agregarDraft(draftRequest, idUsuarioSap)
 
-                Log.i("DRAFT_SUCCESS", "Pedido registrado correctamente: $draft")
+                if(response.isSuccessful){
+                    val draft = response.body()
+                    Log.i("DRAFT_SUCCESS", "Pedido registrado correctamente: $draft")
 
-                _uiStatePedido.value = emptyList()
+                    _uiStateError.value = null
+                    _uiStateDraftSuccess.value = true
+
+                    _uiStatePedido.value = emptyList()
+                    _uiStateStockResponse.value = null
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    val json = Json {
+                        ignoreUnknownKeys = true
+                        isLenient = true
+                    }
+
+                    val errorDto = try {
+                        errorBody?.let { json.decodeFromString<ErrorResponse>(it) }
+                    } catch (e: Exception){
+                        null
+                    }
+
+                    var message = errorDto?.message ?: "Error al registrar el pedido"
+
+                    Log.i("ERROR_DRAFT", "Code: ${errorDto?.code}, Message: $message")
+
+                    _uiStateError.value = message
+                    _uiStateDraftSuccess.value = false
+                }
             } catch (e: Exception) {
-                Log.i("ERROR_DRAFT", "${e.message}")
+                Log.i("ERROR_DRAFT", "Error de conexión: ${e.message}")
             }
         }
     }

@@ -27,14 +27,19 @@ class LoginViewModel @Inject constructor(
     //PRIMERA FORMA DE HACER UN UPDATE
     fun onShowPasswordChange() {
         _uiStateLogin.update { state ->
-            state.copy(viewPassword = !state.viewPassword)
+            state.copy(
+                viewPassword = !state.viewPassword
+            )
         }
     }
 
     //SEGUNDA FORMA DE HACER UN UPDATE
     fun onPasswordChange(password: String) {
         _uiStateLogin.update { state ->
-            state.copy(password = password)
+            state.copy(
+                password = password,
+                error = null
+            )
         }
 
 //        _uiStateLogin.value = _uiStateLogin.value.copy(password = password)
@@ -43,7 +48,10 @@ class LoginViewModel @Inject constructor(
 
     fun onUsernameChange(username: String) {
         _uiStateLogin.update { state ->
-            state.copy(username = username)
+            state.copy(
+                username = username,
+                error = null
+            )
         }
         onButtonLoginChange()
     }
@@ -63,18 +71,30 @@ class LoginViewModel @Inject constructor(
                 delay(1000)
 
                 val response = loginUseCase(_uiStateLogin.value.username, _uiStateLogin.value.password)
+
+                val now = System.currentTimeMillis()
+                val oneHourMillis = 60*60*1000L
+                //val oneHourMillis = 60 * 1000L
+                val expiresAt = now + oneHourMillis
+
                 val session = UserSession(
                     response.idUsuario,
                     response.codigo,
                     response.almacen,
                     response.token,
-                    response.status
+                    response.status,
+                    expiresAt = expiresAt
                 )
+
                 userPreferences.saveUserSession(session)
 
                 onSuccess()
             } catch (e: Exception){
-                _uiStateLogin.value = _uiStateLogin.value.copy(error = e.message, isLoading = false)
+                val errorMessage = "Credenciales incorrectas"
+                _uiStateLogin.value = _uiStateLogin.value.copy(
+                    error = errorMessage,
+                    isLoading = false,
+                )
             } finally {
                 _uiStateLogin.value = _uiStateLogin.value.copy(isLoading = false)
             }
@@ -83,8 +103,8 @@ class LoginViewModel @Inject constructor(
 }
 
 data class LoginUiState(
-    val username: String = "christel",
-    val password: String = "prueba1234",
+    val username: String = "",
+    val password: String = "",
     val viewPassword: Boolean = false,
     val isLoading: Boolean = false,
     val enabledButtonLogin: Boolean = false,

@@ -45,12 +45,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.battilana.app_solicitudes.R
+import com.battilana.app_solicitudes.ui.components.AutoCompleteSelectM3
 import com.battilana.app_solicitudes.ui.components.BattiTextField
 import com.battilana.app_solicitudes.ui.components.BattiButton
 import com.battilana.app_solicitudes.ui.components.BattiOutLinedButton
 import com.battilana.app_solicitudes.ui.components.BattiSelect
-import com.battilana.app_solicitudes.ui.components.BattiSelectDinamic
 import com.battilana.app_solicitudes.ui.components.BattiText
+import com.battilana.app_solicitudes.ui.theme.battiOrangeColor
 
 @Composable
 fun PedidoScreen(
@@ -73,10 +74,26 @@ fun PedidoScreen(
     val articulosAgregados by pedidoViewModel.uiStatePedido.collectAsState()
     var cantidad by remember { mutableStateOf("") }
 
+    var clienteText by remember { mutableStateOf("") }
+    var articuloText by remember { mutableStateOf("") }
+
+    val draftSuccess by pedidoViewModel.uiStateDraftSuccess.collectAsState()
+    val errorMessage by pedidoViewModel.uiStateError.collectAsState()
+
+
     LaunchedEffect(Unit) {
         pedidoViewModel.cargarUsuariosSap()
-        pedidoViewModel.cargarClientesSap()
-//        pedidoViewModel.cargarArticulosSap()
+    }
+
+    LaunchedEffect(draftSuccess) {
+        if(draftSuccess == true){
+            comentario = ""
+            cantidad = ""
+            clienteText = ""
+            articuloText = ""
+            selectedClienteSap = null
+            selectedArticulo = null
+        }
     }
 
     Scaffold(
@@ -104,28 +121,35 @@ fun PedidoScreen(
                 }
             )
             Spacer(Modifier.height(10.dp))
-            BattiSelect(
-                label = "Seleccione un cliente",
-                options = clientes.map {
-                    UiStateClienteItem(it.cardCode, it.cardName)
+            AutoCompleteSelectM3(
+                label = "Clientes",
+                items = clientes.map { UiStateClienteItem(it.cardCode, it.cardName) },
+                itemLabel = {it.cardName},
+                text = clienteText,
+                onTextChange = { newText ->
+                    clienteText = newText
                 },
-                selectedOption = selectedClienteSap,
-                labelMapper = { it.cardName },
-                onSelected = {
-                    selectedClienteSap = it
+                onItemSelected = { cliente ->
+                    selectedClienteSap = cliente
+                    clienteText = cliente.cardName
+                },
+                onSearch = { query ->
+                    pedidoViewModel.buscarClientesSap(query)
                 }
             )
-            Spacer(Modifier.height(10.dp))
-            BattiSelectDinamic(
-                label = "Seleccione un producto",
-                options = articulos.map {
-                    UiStateArticuloItem(it.itemCode, it.itemName)
+            Spacer(Modifier.height(20.dp))
+            AutoCompleteSelectM3(
+                label = "Articulos/Productos",
+                items = articulos.map { UiStateArticuloItem(it.itemCode, it.itemName) },
+                itemLabel = { it.itemName},
+                text = articuloText,
+                onTextChange = { newText ->
+                    articuloText = newText
                 },
-                selectedOption = selectedArticulo,
-                labelMapper = { it.itemName },
-                onSelected = {
-                    selectedArticulo = it
-                    pedidoViewModel.cargarStockAlmacen(it.itemCode)
+                onItemSelected = { item ->
+                    selectedArticulo = item
+                    articuloText = item.itemName
+                    pedidoViewModel.cargarStockAlmacen(item.itemCode)
                 },
                 onSearch = { query ->
                     pedidoViewModel.buscarAreticulos(query)
@@ -178,10 +202,13 @@ fun PedidoScreen(
                                 whsCode = idAlmacen
                             )
                             cantidad = "" //limpiamos el campito eae
+//                            selectedArticulo = null
+                            articuloText = ""
+                            pedidoViewModel.limpiarStock()
                         }
                     }
                 },
-                text = "Agregar Producto"
+                text = "Agregar Producto",
             )
             Card(
                 modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
@@ -261,8 +288,22 @@ fun PedidoScreen(
                 label = "Comentario",
             )
             Spacer(Modifier.height(10.dp))
+            if(errorMessage != null){
+                Text(
+                    text = errorMessage ?: "",
+                    color = Color.Red,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold
+                )
+            }
             BattiButton(
                 onClick = {
+
+
+
                     val clienteId = selectedClienteSap?.cardCode ?: return@BattiButton
                     val idUsuarioSap = selectedUsuarioSap?.id ?: return@BattiButton
 
@@ -271,6 +312,18 @@ fun PedidoScreen(
                         idUsuarioSap = idUsuarioSap,
                         comentario = comentario.ifEmpty { "" }
                     )
+
+//                    if(errorMessage!=null && errorMessage.equals("")){
+//                        cantidad = ""
+//                        comentario = ""
+//
+//                        clienteText = ""
+//                        articuloText = ""
+//
+//                        pedidoViewModel.limpiarListaDeArticulos()
+//                        pedidoViewModel.limpiarStock()
+//                    }
+
                 },
                 text = "Registrar Pedido"
             )
