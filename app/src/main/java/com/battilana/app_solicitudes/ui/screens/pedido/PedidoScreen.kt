@@ -287,8 +287,7 @@ fun PedidoScreen(
                     }
                 }
             }
-            Spacergit status
-                    git status
+            Spacer
                     (Modifier.height(8.dp))
             BattiTextField(
                 modifier = Modifier,
