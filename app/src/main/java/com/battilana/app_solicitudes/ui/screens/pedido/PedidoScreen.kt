@@ -17,10 +17,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -40,7 +43,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -80,6 +85,7 @@ fun PedidoScreen(
     val draftSuccess by pedidoViewModel.uiStateDraftSuccess.collectAsState()
     val errorMessage by pedidoViewModel.uiStateError.collectAsState()
 
+    val isLoading by pedidoViewModel.uiStateLoading.collectAsState()
 
     LaunchedEffect(Unit) {
         pedidoViewModel.cargarUsuariosSap()
@@ -165,7 +171,10 @@ fun PedidoScreen(
                         cantidad = it
                     },
                     label = "Cantidad",
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number
+                    )
                 )
                 Spacer(Modifier.width(10.dp))
                 BattiTextField(
@@ -278,7 +287,9 @@ fun PedidoScreen(
                     }
                 }
             }
-            Spacer(Modifier.height(8.dp))
+            Spacergit status
+                    git status
+                    (Modifier.height(8.dp))
             BattiTextField(
                 modifier = Modifier,
                 value = comentario,
@@ -299,34 +310,59 @@ fun PedidoScreen(
                     fontWeight = FontWeight.Bold
                 )
             }
-            BattiButton(
+            Button(
+                modifier = Modifier.fillMaxWidth(),
                 onClick = {
-
-
-
-                    val clienteId = selectedClienteSap?.cardCode ?: return@BattiButton
-                    val idUsuarioSap = selectedUsuarioSap?.id ?: return@BattiButton
+                    val clienteId = selectedClienteSap?.cardCode ?: return@Button
+                    val idUsuarioSap = selectedUsuarioSap?.id ?: return@Button
 
                     pedidoViewModel.agregarDraft(
                         clienteId = clienteId,
                         idUsuarioSap = idUsuarioSap,
                         comentario = comentario.ifEmpty { "" }
                     )
-
-//                    if(errorMessage!=null && errorMessage.equals("")){
-//                        cantidad = ""
-//                        comentario = ""
-//
-//                        clienteText = ""
-//                        articuloText = ""
-//
-//                        pedidoViewModel.limpiarListaDeArticulos()
-//                        pedidoViewModel.limpiarStock()
-//                    }
-
                 },
-                text = "Registrar Pedido"
-            )
+                shape = RoundedCornerShape(30),
+                enabled = !isLoading
+            ) {
+                if (isLoading){
+                    CircularProgressIndicator(
+//                                color = Color.White,
+                        strokeWidth = 2.dp,
+                        modifier = Modifier.size(20.dp)
+                    )
+                } else {
+                    Text(
+                        modifier = Modifier.padding(vertical = 5.dp),
+                        text = "Registrar Pedido"
+                    )
+                }
+            }
+//            BattiButton(
+//                onClick = {
+//                    val clienteId = selectedClienteSap?.cardCode ?: return@BattiButton
+//                    val idUsuarioSap = selectedUsuarioSap?.id ?: return@BattiButton
+//
+//                    pedidoViewModel.agregarDraft(
+//                        clienteId = clienteId,
+//                        idUsuarioSap = idUsuarioSap,
+//                        comentario = comentario.ifEmpty { "" }
+//                    )
+//
+////                    if(errorMessage!=null && errorMessage.equals("")){
+////                        cantidad = ""
+////                        comentario = ""
+////
+////                        clienteText = ""
+////                        articuloText = ""
+////
+////                        pedidoViewModel.limpiarListaDeArticulos()
+////                        pedidoViewModel.limpiarStock()
+////                    }
+//
+//                },
+//                text = "Registrar Pedido"
+//            )
             Row {
                 BattiOutLinedButton(
                     modifier = Modifier.weight(1f),

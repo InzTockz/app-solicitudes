@@ -33,8 +33,7 @@ class PedidoViewModel @Inject constructor(
     private val _uiStateUsuarioSapResponse = MutableStateFlow<List<UsuarioSapResponse>>(emptyList())
     val uiStateUsuarioResponse: StateFlow<List<UsuarioSapResponse>> = _uiStateUsuarioSapResponse
 
-    private val _uiStateClienteSapResponse =
-        MutableStateFlow<List<ClientesSapResponse>>(emptyList())
+    private val _uiStateClienteSapResponse = MutableStateFlow<List<ClientesSapResponse>>(emptyList())
     val uiStateClienteSapResponse: StateFlow<List<ClientesSapResponse>> = _uiStateClienteSapResponse
 
     private val _uiStateArticuloResponse = MutableStateFlow<List<ArticulosResponse>>(emptyList())
@@ -45,6 +44,9 @@ class PedidoViewModel @Inject constructor(
 
     private val _uiStatePedido = MutableStateFlow<List<UiStatePedido>>(emptyList())
     val uiStatePedido: StateFlow<List<UiStatePedido>> = _uiStatePedido
+
+    private val _uiStateLoading = MutableStateFlow(false)
+    val uiStateLoading: StateFlow<Boolean> = _uiStateLoading
 
     //CONTROLAR EL ERROR
     private val _uiStateError = MutableStateFlow<String?>(null)
@@ -164,10 +166,10 @@ class PedidoViewModel @Inject constructor(
 
     fun agregarDraft(clienteId: String, idUsuarioSap: Int, comentario: String) {
         viewModelScope.launch {
+            _uiStateLoading.value = true
             try {
                 val usuario = userPreferences.userSession.first()
                 val idVendedor = usuario?.codigo.toString()
-                //val idAlmacen = usuario?.almacen
 
                 val lineas = _uiStatePedido.value.map {
                     DraftDocumentLineRequest(
@@ -219,6 +221,8 @@ class PedidoViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.i("ERROR_DRAFT", "Error de conexión: ${e.message}")
+            } finally {
+                _uiStateLoading.value = false
             }
         }
     }

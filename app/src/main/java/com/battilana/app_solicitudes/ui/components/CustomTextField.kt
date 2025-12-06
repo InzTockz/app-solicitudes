@@ -3,6 +3,7 @@ package com.battilana.app_solicitudes.ui.components
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.KeyboardOptions.Companion
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -59,7 +60,8 @@ fun BattiTextField(
     shape: Shape = RoundedCornerShape(30),
     singleLine: Boolean = true,
     label: String,
-    readOnly: Boolean = false
+    readOnly: Boolean = false,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ) {
     OutlinedTextField(
         modifier = modifier
@@ -69,7 +71,8 @@ fun BattiTextField(
         shape = shape,
         singleLine = singleLine,
         readOnly = readOnly,
-        label = { Text(text = label) }
+        label = { Text(text = label) },
+        keyboardOptions = keyboardOptions
     )
 }
 

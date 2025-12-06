@@ -29,7 +29,7 @@ import com.battilana.app_solicitudes.ui.theme.battiOrangeColor
 fun HomeScreen() {
     Scaffold(
         topBar = {
-            BattiTopAppBarHome(text = "Dashboard", contentColor = Color.Black)
+            BattiTopAppBarHome(text = "Bienvenido", contentColor = Color.Black)
         }
     ) { innerPadding ->
         Column(
