@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class UserSession (
     val idUsuario: Long,
     val codigo: Int?,
-    val almacen:String?,
+//    val almacen:String?,
     val token:String,
     val status:String,
     val expiresAt: Long? = null

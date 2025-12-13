@@ -80,7 +80,7 @@ class LoginViewModel @Inject constructor(
                 val session = UserSession(
                     response.idUsuario,
                     response.codigo,
-                    response.almacen,
+//                    response.almacen,
                     response.token,
                     response.status,
                     expiresAt = expiresAt

@@ -32,9 +32,9 @@ class SapRepositoryImpl @Inject constructor(
 
     override suspend fun stockPorArticuloYAlmacen(
         idArticulo: String,
-        idAlmacen: String
+        codVendedor: Int
     ): StockAlmacenResponse {
-        return this.api.stockPorArticuloYAlmacen(idArticulo, idAlmacen)
+        return this.api.stockPorArticuloYAlmacen(idArticulo, codVendedor)
     }
 
     override suspend fun agregarDraft(

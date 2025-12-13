@@ -67,10 +67,10 @@ interface ApiService {
         @Query("nombre") nombre: String
     ): List<ArticulosResponse>
 
-    @GET(value = "sap/stock/articulo/{idArticulo}/almacen/{idAlmacen}")
+    @GET(value = "sap/stock/articulo/{idArticulo}/vendedor/{codVendedor}")
     suspend fun stockPorArticuloYAlmacen(
         @Path("idArticulo") idArticulo: String,
-        @Path("idAlmacen") idAlmacen: String
+        @Path("codVendedor") codVendedor: Int
     ): StockAlmacenResponse
 
     @POST(value = "sap/agregar/user-sap/{idUsuarioSap}")

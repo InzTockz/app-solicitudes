@@ -25,8 +25,8 @@ class SapUseCase @Inject constructor(
         return this.repository.listarArticulosPorAlmacen(idAlmacen, nombre)
     }
 
-    suspend fun stockPorArticuloYAlmacen(idArticulo: String, idAlmacen: String): StockAlmacenResponse{
-        return this.repository.stockPorArticuloYAlmacen(idArticulo, idAlmacen)
+    suspend fun stockPorArticuloYAlmacen(idArticulo: String, codVendedor: Int): StockAlmacenResponse{
+        return this.repository.stockPorArticuloYAlmacen(idArticulo, codVendedor)
     }
 
     suspend fun agregarDraft(draftRequest: DraftRequest, idUsuarioSap: Int): Response<DraftResponse> {

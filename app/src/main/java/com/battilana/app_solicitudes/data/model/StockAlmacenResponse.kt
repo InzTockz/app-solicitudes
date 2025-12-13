@@ -9,5 +9,5 @@ data class StockAlmacenResponse(
     val stockTotal: Double,
     val unidadMedida: String,
     val codigoArticulo: String,
-    val codigoAlmacen: String
+    //val codigoAlmacen: String
 )

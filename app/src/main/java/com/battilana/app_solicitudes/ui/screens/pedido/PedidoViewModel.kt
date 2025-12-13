@@ -107,7 +107,7 @@ class PedidoViewModel @Inject constructor(
             } else {
                 try {
                     val usuario = userPreferences.userSession.first()
-                    val idAlmacen = usuario?.almacen ?: "04"
+                    val idAlmacen = "23"
 
                     val articulos = sapUseCase.listarArticulosPorAlmacen(
                         idAlmacen = idAlmacen,
@@ -125,11 +125,11 @@ class PedidoViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val usuario = userPreferences.userSession.first()
-                val idAlmacen = usuario?.almacen ?: return@launch
+                val codUsuario = usuario?.codigo ?: return@launch
 
                 val stock = sapUseCase.stockPorArticuloYAlmacen(
                     itemCode,
-                    if (idAlmacen.isEmpty()) "04" else idAlmacen
+                    codUsuario
                 )
                 _uiStateStockResponse.value = stock
             } catch (e: Exception) {
@@ -138,12 +138,12 @@ class PedidoViewModel @Inject constructor(
         }
     }
 
-    fun agregarArticulo(itemCode: String, cantidad: Double, itemName: String, whsCode: String) {
+    fun agregarArticulo(itemCode: String, cantidad: Double, itemName: String, /*whsCode: String*/) {
         val producto = UiStatePedido(
             itemCode = itemCode,
             cantidad = cantidad,
             itemName = itemName,
-            whsCode = whsCode
+//            whsCode = whsCode
         )
         _uiStatePedido.value = _uiStatePedido.value + producto
     }
@@ -176,7 +176,7 @@ class PedidoViewModel @Inject constructor(
                         ItemCode = it.itemCode,
                         Quantity = it.cantidad.toString(),
                         TaxCode = it.impuesto,
-                        WarehouseCode = it.whsCode
+                        WarehouseCode = "05"
                     )
                 }
 
@@ -247,6 +247,6 @@ data class UiStatePedido(
     val itemCode: String,
     val itemName: String,
     val cantidad: Double,
-    val whsCode: String,
+    //val whsCode: String,
     val impuesto: String = "IGV"
 )

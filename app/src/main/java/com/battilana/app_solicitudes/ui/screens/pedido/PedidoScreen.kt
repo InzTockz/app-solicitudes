@@ -202,13 +202,13 @@ fun PedidoScreen(
                 onClick = {
                     selectedArticulo?.let {
                         val cantidadDouble = cantidad.toDoubleOrNull() ?: 0.0
-                        val idAlmacen = stockResponse?.codigoAlmacen ?: return@BattiButton
+                        //val idAlmacen = stockResponse?.codigoAlmacen ?: return@BattiButton
                         if (cantidadDouble > 0) {
                             pedidoViewModel.agregarArticulo(
                                 itemCode = it.itemCode,
                                 itemName = it.itemName,
-                                cantidad = cantidadDouble,
-                                whsCode = idAlmacen
+                                cantidad = cantidadDouble
+                                //whsCode = idAlmacen
                             )
                             cantidad = "" //limpiamos el campito eae
 //                            selectedArticulo = null
@@ -287,8 +287,7 @@ fun PedidoScreen(
                     }
                 }
             }
-            Spacer
-                    (Modifier.height(8.dp))
+            Spacer(Modifier.height(8.dp))
             BattiTextField(
                 modifier = Modifier,
                 value = comentario,

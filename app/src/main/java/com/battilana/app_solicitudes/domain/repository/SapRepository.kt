@@ -15,7 +15,7 @@ interface SapRepository {
 
     suspend fun listarArticulosPorAlmacen(idAlmacen: String, nombre: String): List<ArticulosResponse>
 
-    suspend fun stockPorArticuloYAlmacen(idArticulo:String, idAlmacen:String) : StockAlmacenResponse
+    suspend fun stockPorArticuloYAlmacen(idArticulo:String, codVendedor: Int) : StockAlmacenResponse
     //DRAFT UPDATE 2.0V
     suspend fun agregarDraft(draftRequest: DraftRequest, idUsuarioSap: Int) : Response<DraftResponse>
 
